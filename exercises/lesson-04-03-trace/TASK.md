@@ -1,37 +1,60 @@
 # Save the execution history
 
-A final answer alone does not reveal which tools ran or what they returned. We will save the event list so a later reader can reconstruct the visible actions leading to that answer.
+> **Where we are.** The agent works in a limited loop, and the program chooses which part of the history the model sees. Now we save the full history to a file, so runs can be investigated after they finish.
+> `agent loop -> history -> [file]`
 
-## Open this starter
+The assistant stopped, and the final message does not say what happened before. Did it miss the right note? Repeat the search several times? Pick the wrong tool? To find out, you need the commands and their results in the order they happened. Without that, investigating a complaint comes down to guesswork. With it, you can show a colleague or a vendor a specific line: this is what the agent asked for, and this is what it got.
 
-Download [this lesson starter](https://github.com/polar-byter/agent-harness-workshop-en/blob/main/downloads/lesson-04-03-trace.zip), choose **Extract All**, and open the extracted `lesson-04-03-trace` folder with **File -> Open** in PyCharm. In **View -> Tool Windows -> Project**, find `control.py` -> `save_events`. Earlier components are prepared; the current function deliberately pauses with `NotImplementedError`. Keep your previous project in its own folder. The main run uses the connection saved in the [required connection lesson](https://github.com/polar-byter/agent-harness-workshop-en/blob/main/course/02-note-assistant/04-connect.md). The offline `demo_check.py` remains a separate code check.
+`save_events` writes the history to a file, one JSON line per event. We save the full history, even if the model saw only part of it at each step: that way you can see both what the program had and what reached the model.
 
-## Follow the data
+## Open the starter
 
-Each event pairs a `command` with its `result`. For example, a read command can be paired with `{'notes': ['Python lists']}`. Each event becomes a separate JSONL line in `trace.jsonl`.
+Download [this lesson's starter](https://github.com/polar-byter/agent-harness-workshop-en/blob/main/downloads/lesson-04-03-trace.zip), extract it and open the `lesson-04-03-trace` folder in PyCharm. The current task is `save_events` in `control.py`.
 
-Unlike the earlier search journal, this function writes a complete current history using mode `'w'`. Running it again replaces the previous file.
+## Look at the data
 
-## Complete the function
-
-Keep the prepared function header. Fill each `...` using the hints below, then remove the `raise NotImplementedError(...)` pause in the starter. The displayed fragment explains the function body; it is not a separate script to paste elsewhere.
+The function receives the list of events from a finished run. Each event pairs a command with its result. Here the agent asked to read the notes and got one note back:
 
 ```python
-def save_events(path: Path, events: list[dict]) -> None:
-    serialized = [json.dumps(event, ensure_ascii=False) for event in events]
+event = {'command': {'tool': 'read_notes'},
+         'result': {'notes': ['Python lists']}}
+json.dumps(event, ensure_ascii=False)
+```
+
+Each event becomes a separate JSON line, as in the search journal from lesson 1.3. One difference: this file holds the history of a single run, so we open it in mode `'w'` and replace the previous contents. To keep several runs, give each its own file.
+
+## Your turn
+
+In `save_events` each event is already turned into a JSON string; the list is in `serialized`. Replace `raise NotImplementedError(...)` with the code below and fill in the gap:
+
+```python
     with path.open('w', encoding='utf-8') as stream:
         for text in serialized:
             stream.write(...)
 ```
 
-Use `with path.open('w', encoding='utf-8') as stream`. Loop over `events`, serialize each event with `json.dumps(event, ensure_ascii=False)`, and write it with a trailing newline.
+As in the first journal, write `text + '\n'`. If there are no events, the loop writes nothing and the file stays empty; no special case is needed.
 
-Keep the command and result in the same record. Do not reduce the record to a human summary that loses the exact values needed for diagnosis. The function returns `None`; the saved file is its effect.
+## Run it with the model
 
-## Run and inspect
+Open `demo.py` and choose **Run 'demo'**. After the agent finishes, the program passes the history to your function, and the Run window shows the result and a message about the history file. Open the file and match each command with its result. This is the history of your own run, so the lines will be your own.
 
-Open `demo.py` directly under **Project -> lesson-04-03-trace**, right-click in its editor and choose **Run 'demo'**. Read the result in **View -> Tool Windows -> Run**. A `Complete ...` message means the exercise pause is still present.
+## Check the function on its own
 
-Run `demo.py` and open the generated history file. Check that each saved event corresponds to a visible command and result. This is a small form of action tracing, not distributed tracing and not access to the model's internal reasoning. Logs may contain source data, so decide what belongs in a working log before using the approach on real documents.
+Open `demo_check.py` and choose **Run 'demo_check'**. We expect one line:
 
-After a successful demonstration, optionally open the relevant file under `tests`, right-click its test class and run it. Those checks repeat defined expectations; they do not certify every possible input or every model answer.
+```text
+{"command": {"tool": "read_notes"}, "result": {"notes": ["Python lists"]}}
+```
+
+To run the prepared checks, run `class LessonTests` in `tests/test_lesson.py`.
+
+## Try an investigation
+
+Run `demo.py` again and open the fresh history file. Use it to answer three questions: which tool did the model ask for first, with which query, and how many notes came back? If the model answered, compare its answer with the notes in the log. This is the kind of investigation the MTS case called for. Keep in mind that such a log contains your source data, so decide what belongs in it before using the approach on real documents.
+
+## What we have now
+
+Every run leaves a record of the agent's actions. Reconstructing a run from such records is called **tracing**. Our log is its simplest form: a sequence of commands and results. Tracing platforms such as OpenTelemetry also link operations with IDs and record how long each took.
+
+Next: [compare behavior across scenarios](https://github.com/polar-byter/agent-harness-workshop-en/blob/main/course/04-run-control/04-evaluation.md). Back to [all lessons](https://github.com/polar-byter/agent-harness-workshop-en/blob/main/course/README.md).

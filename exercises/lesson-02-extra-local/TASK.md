@@ -1,18 +1,22 @@
 # Run a model inside Python
 
-Ollama serves a model through a local HTTP API. Another option is to load a GGUF model through a Python library in the same process as our application. This optional experiment makes that boundary visible without changing the rest of the course connection.
+> **Where we are.** In the main route the program sends messages to Ollama, which runs the model. Here we load a model into our own Python program instead. This lesson is optional; the main route keeps using Ollama or a cloud service.
 
-## Open this starter
+So far the model ran in a separate application and our code only sent it requests. Another option is to load the model file directly into the Python program. Then loading the model, calling it and freeing its memory become our code's job. This is how a model gets built into a program that must work without a network.
 
-Download [this lesson starter](https://github.com/polar-byter/agent-harness-workshop-en/blob/main/downloads/lesson-02-extra-local.zip), choose **Extract All**, and open the extracted `lesson-02-extra-local` folder with **File -> Open** in PyCharm. In **View -> Tool Windows -> Project**, find `local_model.py` -> `send_local`. Earlier components are prepared; the current function deliberately pauses with `NotImplementedError`. Keep your previous project in its own folder.
+The question and note stay the same, and `build_messages` and `extract_answer` do not change: we convert the model's reply into the familiar format. The only new function is `send_local`, which calls the loaded model.
 
-## Follow the data
+## Open the starter
 
-The prepared `local_runtime.load_model` loads a `Llama` instance with CPU execution and a bounded context. Our `send_local(model, messages)` prepares the message roles, calls the model and converts its dictionary response into the normalized course format.
+Download [this lesson's starter](https://github.com/polar-byter/agent-harness-workshop-en/blob/main/downloads/lesson-02-extra-local.zip), extract it and open the `lesson-02-extra-local` folder in PyCharm. The current task is `send_local` in `local_model.py`. Loading the model and converting its reply are ready in `local_runtime.py`.
 
-## Complete the function
+## Look at the data
 
-Keep the prepared function header. Fill each `...` using the hints below, then remove the `raise NotImplementedError(...)` pause in the starter. The displayed fragment explains the function body; it is not a separate script to paste elsewhere.
+`local_runtime.load_model` creates a `Llama` object from the library llama-cpp-python, set to calculate on the processor with a limited context. Our `send_local(model, messages)` receives that object and the list of messages. The prepared `prepare_messages` changes the `developer` role to `system` and adds a short instruction for Qwen; `convert_response` checks that generation finished and wraps the text in the course format.
+
+## Your turn
+
+The line `prepared = prepare_messages(messages)` is already there. Replace the `raise NotImplementedError(...)` after it so the function looks like this, and fill in the gaps:
 
 ```python
 def send_local(model, messages: list[dict]) -> dict:
@@ -23,14 +27,17 @@ def send_local(model, messages: list[dict]) -> dict:
     return convert_response(...)
 ```
 
-Pass `prepared` as the messages argument and `response` to `convert_response`. Keep the supplied generation settings; the tests inspect the message roles and limit. The conversion checks completion and selects answer text.
+1. Pass `prepared` as `messages`.
+2. Pass `response` to `convert_response`.
 
-Use the prepared loading context manager: it closes the model in `finally`. Do not write `with Llama(...)` for this pinned exercise version. Loading a model needs RAM beyond the file size, and a small model may fail to follow instructions even when the library runs correctly.
+`model.create_chat_completion(...)` hands the messages to the engine and returns a dictionary; there is no HTTP request and no Ollama here, everything happens inside our program. Keep the generation settings as given: the checks look at the roles and the length limit.
 
-## Run and inspect
+## Run it
 
-Open `demo.py` directly under **Project -> lesson-02-extra-local**, right-click in its editor and choose **Run 'demo'**. Read the result in **View -> Tool Windows -> Run**. A `Complete ...` message means the exercise pause is still present.
+Run `demo_check.py` first. It uses a small fake model object instead of the real one, so it needs neither the library nor the model file, and it checks that your function passed the right messages and returned the right structure.
 
-First run `demo_check.py`; it uses a fake model object and does not import or load the real runtime. For the optional real run, follow the [installation and model-file instructions](https://github.com/polar-byter/agent-harness-workshop-en/blob/main/course/02-note-assistant/local-setup.md). Run `check_install.py`, then `demo.py` after placing the GGUF file where that lesson specifies. This experiment is separate from the shared Ollama or API connection.
+For a real answer, follow the [installation and model-file instructions](https://github.com/polar-byter/agent-harness-workshop-en/blob/main/course/02-note-assistant/local-setup.md), run `check_install.py`, put the GGUF file where that page says and then run `demo.py`. Loading needs more memory than the file size, and a small model can ignore an instruction even when the library works perfectly; compare its answer with the note.
 
-This optional branch keeps its checks in `demo_check.py` rather than a tests folder. It uses a fake model object and can run without loading the library or weights.
+## What we have now
+
+We changed only how one request reaches the model: the program loads the file itself instead of calling Ollama. In the [agent loop](https://github.com/polar-byter/agent-harness-workshop-en/blob/main/course/03-tool-agent/02-cycle.md) any of these ways - API, Ollama or library - fills the same place: it receives messages and returns the model's next decision. This exercise does not change the saved connection used by the other starters. Back to [all lessons](https://github.com/polar-byter/agent-harness-workshop-en/blob/main/course/README.md).

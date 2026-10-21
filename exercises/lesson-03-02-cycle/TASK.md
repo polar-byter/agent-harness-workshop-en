@@ -1,26 +1,52 @@
 # Return tool results to the model
 
-The previous function finds notes, but the model has not received those results yet. Sending only the original task again would omit the information just collected. We will save the command with its result and include that history in the next decision request.
+> **Where we are.** The program carries out the model's request to search the notes, but what it found stays with the program. Today we close the loop: the search result goes back to the model so it can answer.
+> `task -> model -> search -> [result -> model again] -> answer`
 
-## Open this starter
+This is exactly where the right paragraph could get lost in the MTS case: the search found it and it never reached the model. The model does not remember earlier requests. Send it the task "find notes about Python" again on its own, and it does not know the search already ran, so it asks for it again.
 
-Download [this lesson starter](https://github.com/polar-byter/agent-harness-workshop-en/blob/main/downloads/lesson-03-02-cycle.zip), choose **Extract All**, and open the extracted `lesson-03-02-cycle` folder with **File -> Open** in PyCharm. In **View -> Tool Windows -> Project**, find `agent.py` -> `run_agent`. Earlier components are prepared; the current function deliberately pauses with `NotImplementedError`. Keep your previous project in its own folder. The main run uses the connection saved in the [required connection lesson](https://github.com/polar-byter/agent-harness-workshop-en/blob/main/course/02-note-assistant/04-connect.md). The offline `demo_check.py` remains a separate code check.
+So the program keeps a history: every command from the model together with the result of carrying it out. On the next request the model gets the original task and that history. Then it can answer from the found notes or ask for one more action. Repeating this exchange is what is called the agent loop.
 
-## Follow the data
+## Open the starter
 
-Initially `events = []`. After a tool call, the program appends `{'command': command, 'result': result}`. The next `decide(task, events)` receives the same task and this updated list. In a real run, `decide_live` includes it in messages sent to the model.
+Download [this lesson's starter](https://github.com/polar-byter/agent-harness-workshop-en/blob/main/downloads/lesson-03-02-cycle.zip), extract it and open the `lesson-03-02-cycle` folder in PyCharm. The current task is `run_agent` in `agent.py`; `dispatch_tool` from the previous lesson is ready.
 
-The illustration follows one possible two-request route: search, then an answer using two found lines. A real model may choose another sequence. The offline `decide_fixture` merely checks whether history is nonempty and returns a prepared answer; it does not analyze the note contents.
+## How the loop works
 
-## Complete the function
+```text
+Task and history -> model's decision
+                       |
+             +---------+---------+
+             |                   |
+       request a tool      final answer
+             |                   |
+       run the search          done
+             |
+       result into history
+             |
+       model's next decision
+```
 
-Keep the prepared function header. Fill each `...` using the hints below, then remove the `raise NotImplementedError(...)` pause in the starter. The displayed fragment explains the function body; it is not a separate script to paste elsewhere.
+`run_agent` runs this loop. At each step it calls `decide` to get the model's decision. A final answer ends the work. A tool request is carried out by `dispatch_tool`, and the command and result are added to the list `events`. The number of steps is limited by `max_steps`: if the model never answers, the program stops on its own.
+
+## Look at the data
+
+`decide` receives the task `task` and the history `events` and returns the next command or a final answer. In `demo.py` this is `decide_live`, which calls the model; in `demo_check.py` it is `decide_fixture`, whose behavior is known in advance: on the first step it asks for a search, on the second it answers.
+
+One event in the history looks like this:
 
 ```python
-def run_agent(task: str, notes_path: Path, decide, max_steps: int = 4) -> dict:
-    if max_steps < 1:
-        raise ValueError('At least one step is required')
-    events = []
+events.append({'command': {'tool': 'find_notes', 'query': 'python'},
+               'result': {'matches': ['Python functions return values.', 'Python lists keep item order.']}})
+```
+
+The animation shows the task, the command and both found notes going into the next request, while the request counter grows from one to two. A real model may take another route, for example reading all the notes first.
+
+## Your turn
+
+`run_agent` already checks `max_steps` and creates the empty list `events`. Replace `raise NotImplementedError(...)` with the loop and fill in two gaps:
+
+```python
     for step in range(max_steps):
         command = decide(task, events)
         if command.get('type') == 'answer':
@@ -35,16 +61,27 @@ def run_agent(task: str, notes_path: Path, decide, max_steps: int = 4) -> dict:
     return {'status': 'step_limit', 'answer': '', 'events': events}
 ```
 
-For a tool command, compute `result = dispatch_tool(command, notes_path)` and append the command and result to `events`. Let the loop make another decision request. For an answer command, validate the text and return the completed result immediately.
+1. `result` gets `dispatch_tool(command, notes_path)`.
+2. The event holds the variables `command` and `result`.
 
-`range(max_steps)` limits decision requests. When it ends without an answer, return `'step_limit'`. A `return` inside the answer branch exits the whole function; the return after the loop handles exhaustion. Do not add a tool event for a final answer.
+`range(max_steps)` sets how many times the loop may ask the model. The `return` inside the answer branch ends the whole function at once. The last `return`, after the loop, runs only when the steps ran out without an answer: the status is then `step_limit`.
 
-## Run and inspect
+In the offline example, `events` is empty on the first step and `decide_fixture` asks for a search. Your code runs it and records the event. On the second step `decide` receives a non-empty history and returns an answer. In a real run, `decide_live` puts the history into the messages for the model, so the found notes really reach it. Without the recorded event, they would simply not be in the next request.
 
-Open `demo.py` directly under **Project -> lesson-03-02-cycle**, right-click in its editor and choose **Run 'demo'**. Read the result in **View -> Tool Windows -> Run**. A `Complete ...` message means the exercise pause is still present.
+## Run it with the model
 
-Run `demo.py` and inspect the events before the final result. You should be able to connect a model request, the executed search and the data sent back. Use `demo_check.py` separately to verify the call order with a prepared decision function.
+Open `demo.py` and choose **Run 'demo'**. Now the whole loop runs: the model chooses an action, the program carries it out, and the result returns to the model. The Run window shows the events and the final result. We expect an answer based on the found notes; the exact words and the number of steps may vary. A `step_limit` status is a result too: the events show what the model did instead of answering.
 
-This repeating exchange is the agent loop. Its orchestration is our Python code: the model chooses a requested next action, while the program decides when to call, execute, record and stop.
+## Check the function on its own
 
-After a successful demonstration, optionally open the relevant file under `tests`, right-click its test class and run it. Those checks repeat defined expectations; they do not certify every possible input or every model answer.
+Open `demo_check.py` and choose **Run 'demo_check'**. We expect status `completed`, the answer "Found two notes about Python." and one event: the search command and its result. To run the prepared checks, run `class LessonTests` in `tests/test_lesson.py`.
+
+## Try to break it
+
+Comment out the `events.append(...)` line in your code by putting `#` in front of it and run `demo_check.py`. `decide_fixture` now always receives an empty history, asks for the search every time, and the loop ends with `step_limit`. That is what an agent looks like when it cannot see the results of its own actions. Remove the `#`.
+
+## What we have now
+
+The assistant has an agent loop: the model decides, the program acts, the result goes back to the model. Coordinating these steps is called **orchestration**: the code decides when to call the model, when to run a tool, what to pass on and when to stop. Ours is an ordinary Python loop; larger systems use libraries such as LangGraph for the same job.
+
+Next section: [limit the number of actions](https://github.com/polar-byter/agent-harness-workshop-en/blob/main/course/04-run-control/01-budget.md). Back to [all lessons](https://github.com/polar-byter/agent-harness-workshop-en/blob/main/course/README.md).

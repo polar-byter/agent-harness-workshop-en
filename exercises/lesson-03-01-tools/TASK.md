@@ -1,20 +1,36 @@
 # Execute a permitted tool request
 
-So far we chose source notes ourselves. Now the model can request an operation. That also gives us a reason to draw a boundary: a model may invent a tool name, but the program should execute only operations we deliberately provide. `dispatch_tool` makes that decision in ordinary Python.
+> **Where we are.** Until now we chose the note for the model ourselves. Now the model can ask the program to find notes. Today is the first half: the program receives the model's request and decides whether to carry it out.
+> `task -> model -> [command -> check -> search] -> result`
 
-## Open this starter
+A user asks about Python. Instead of answering in text, the model replies with a request: run `find_notes` with the query "python". But it could just as well write `search_notes`, which does not exist in our program, or ask for `delete_file`. A correctly formatted JSON request does not make the action acceptable.
 
-Download [this lesson starter](https://github.com/polar-byter/agent-harness-workshop-en/blob/main/downloads/lesson-03-01-tools.zip), choose **Extract All**, and open the extracted `lesson-03-01-tools` folder with **File -> Open** in PyCharm. In **View -> Tool Windows -> Project**, find `agent.py` -> `dispatch_tool`. Earlier components are prepared; the current function deliberately pauses with `NotImplementedError`. Keep your previous project in its own folder. The main run uses the connection saved in the [required connection lesson](https://github.com/polar-byter/agent-harness-workshop-en/blob/main/course/02-note-assistant/04-connect.md). The offline `demo_check.py` remains a separate code check.
+So we put a check between the model's reply and any action. `dispatch_tool` will know exactly two permitted actions: read the notes and search them. It rejects every other name, requires a text query for searching and takes the file path from the program, not from the model. The model can ask, but it cannot add a new capability to the program with one line of text. This is the boundary the introduction promised the administrator: an agent's permissions are set in code, not in the prompt.
 
-## Follow the data
+## Open the starter
 
-A possible command is `{'type': 'tool', 'tool': 'find_notes', 'query': 'python'}`. The `tool` field names the requested operation and `query` supplies its search text. The application supplies `notes_path` separately, so the model cannot use this command to choose an arbitrary file.
+Download [this lesson's starter](https://github.com/polar-byter/agent-harness-workshop-en/blob/main/downloads/lesson-03-01-tools.zip), extract it and open the `lesson-03-01-tools` folder in PyCharm. The current task is `dispatch_tool` in `agent.py`. The model connects through the settings saved in lesson 2.4.
 
-`decide_live` prepares the request and parses the model text into this dictionary. Parsing JSON does not execute a function. We will implement the next step.
+How the model's text becomes a request is handled by the ready `decide_live` in `decisions.py`. If you want to write it yourself, see the optional [prepared-modules workbook](https://github.com/polar-byter/agent-harness-workshop-en/blob/main/course/extra-prepared-modules/README.md).
 
-## Complete the function
+## Look at the data
 
-Keep the prepared function header. Fill each `...` using the hints below, then remove the `raise NotImplementedError(...)` pause in the starter. The displayed fragment explains the function body; it is not a separate script to paste elsewhere.
+For the task "find notes about Python", `decide_live` turns the model's reply into a dictionary:
+
+```python
+command = {'type': 'tool', 'tool': 'find_notes', 'query': 'python'}
+command.get('tool')   # 'find_notes'
+```
+
+`type` with the value `tool` means the model is asking for an action, `tool` names the action and `query` holds the search text. Our function receives this dictionary, picks the matching function by name and returns its result.
+
+The path to the notes comes in a separate parameter, `notes_path`, and the program sets it. So the model can ask to read or search the notes file, but it cannot point the program at any other file on the computer.
+
+This request format is the course's own small protocol. The big APIs offer native function calling for the same purpose, and the idea is identical: the model describes the action, the program performs it.
+
+## Your turn
+
+Replace `raise NotImplementedError(...)` in `dispatch_tool` with the code below and fill in the gaps:
 
 ```python
 def dispatch_tool(command: dict, notes_path: Path) -> dict:
@@ -30,16 +46,33 @@ def dispatch_tool(command: dict, notes_path: Path) -> dict:
     raise ValueError('Unknown tool: ' + str(name))
 ```
 
-Read `command.get('tool')`. For `'read_notes'`, return `{'notes': read_notes(notes_path)}`. For `'find_notes'`, check that `query` is a string, then call `find_notes(read_notes(notes_path), query)` and return its matches under the key `'matches'`. Raise `ValueError` for any other name.
+1. In the `read_notes` branch, call `read_notes(notes_path)`.
+2. In the search branch the notes are already read into `notes`; pass them with `query` to `find_notes`.
 
-`dict.get` returns `None` when the key is absent, so an omitted name also reaches the rejection branch. Keep checks before the call rather than accepting any Python name found in model text.
+We reuse the functions from section 1 instead of writing the search again. The last line catches every name other than the two permitted ones: the program does not try to guess what the model meant. If the dictionary has no `tool` field at all, `command.get('tool')` returns `None` and also ends up at that error. `isinstance(query, str)` stops a number or a list from reaching the search.
 
-## Run and inspect
+## Run it with the model
 
-Open `demo.py` directly under **Project -> lesson-03-01-tools**, right-click in its editor and choose **Run 'demo'**. Read the result in **View -> Tool Windows -> Run**. A `Complete ...` message means the exercise pause is still present.
+Open `demo.py` and choose **Run 'demo'**. The model gets the task to find notes about Python, returns a command, and `demo.py` prints it and passes it to your function. We expect `find_notes` with a query about Python and a dictionary with the found notes.
 
-Run `demo.py` with the saved model connection, then use `demo_check.py` for a known command. The search should return the two Python lines from the source. In a separate offline experiment, change the test command tool name to `'delete_notes'`: it must be rejected without deleting anything.
+If the model answered with text or chose another tool, compare its command with the task: the program does not quietly replace the model's decision. Small local models sometimes break the JSON format, and `decide_live` reports it. If that keeps happening, switch models with `configure_model.py`; your function stays the same.
 
-This allowlist is one narrow guardrail: it constrains a particular action. It does not isolate the Python process or make all possible model behavior safe.
+## Check the function on its own
 
-After a successful demonstration, optionally open the relevant file under `tests`, right-click its test class and run it. Those checks repeat defined expectations; they do not certify every possible input or every model answer.
+Open `demo_check.py` and choose **Run 'demo_check'**. The command is fixed here, with no model, so the result is always the same:
+
+```text
+{'matches': ['Python functions return values.', 'Python lists keep item order.']}
+```
+
+To run the prepared checks, open `tests/test_lesson.py` and run `class LessonTests`.
+
+## Try to break it
+
+In `demo_check.py`, find the dictionary passed to `dispatch_tool` and change `'find_notes'` to `'search_notes'`. Run again. We expect `ValueError: Unknown tool: search_notes`, and the file is never read. That is the boundary in code, however confidently a model might propose an invented action. Put `'find_notes'` back.
+
+The check stops forbidden actions; it does not choose the right query for the model. If the model asks for a permitted search for "tools", the function runs it. Whether that search fits the user's question is a separate matter, and now you can tell the two cases apart: the program rejected a forbidden action, or it carried out a permitted one the model chose badly.
+
+## What we have now
+
+The model can ask for a search, and the program decides whether to carry it out. Checks and limits like these are called **guardrails**. Ours are plain Python conditions: a permitted name and a text query. The found notes are still with the program; nobody has passed them to the model yet. That is the next step: [return tool results to the model](https://github.com/polar-byter/agent-harness-workshop-en/blob/main/course/03-tool-agent/02-cycle.md). Back to [all lessons](https://github.com/polar-byter/agent-harness-workshop-en/blob/main/course/README.md).

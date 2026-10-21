@@ -1,41 +1,49 @@
 # What we built and where it can help
 
-We began by finding a word in a few lines. The main route ends with programs that send explicit model requests, execute permitted operations, return tool results and preserve history. The coding project adds a preview, approval and a test report. We can follow that path instead of judging the system only by its final paragraph.
+In the first lesson we looked for a word in three lines. By the end of the main route the program sends explicit requests to a model, runs only the tools it allows, passes tool results into the next request, enforces limits and records every step. In the last section the model proposes a code change, and the program shows the diff, asks for approval and runs the tests.
+
+Every question from the MTS case in the introduction now has a place in the code where it can be answered. Is the line in the source? Look at the file and `read_notes`. Did the search find it? The journal of `find_notes`. What did the model receive? The messages from `build_messages` and the history chosen by `select_context`. What did it ask for, and what did the program allow? `dispatch_tool` and the event log. Who approved the change? `apply_change`.
 
 ## What the exercises made concrete
 
-We separated a file path from file contents, and retrieved evidence from the answer generated about it. We saw that mentioning a file does not put its text in a model request. We also separated a proposed action from an executed one: the model returns a description, while Python checks and performs it.
+Having a document on the computer does not mean the model has seen its contents. Between the file and the answer there are specific operations: read, search, put into the request. If one of them is missing, asking the model more firmly will not help.
 
-The loop made another boundary visible. A tool result reaches the model only when the next request includes it. The application controls that history and enforces a stopping condition. Later, a written file and a checked change became separate outcomes. Tests, source comparison and scenario evaluation check different kinds of correctness.
+The model does not perform actions; it describes them. A dictionary with a tool name does nothing until the program decides to run it. That is why the boundaries live in code: which tools exist, which files are reachable, how many steps are allowed. A tool's result does not reach the model by itself either; the program has to put it into the next request.
 
-Python supplied a way to examine those distinctions directly. For someone specifying or evaluating an integration, the same distinctions become concrete requirements: input fields, permitted operations, missing-data conditions, approval points and evidence for acceptance.
+A completed action and a verified result are different things. A written file can contain a bug, and a complete answer from a model can contain claims that are not in the source. Each case had its own check in the course: code tests, comparing the answer with the note, the event log, the control scenarios.
+
+Python made it possible to try all this by hand. "Connect a source", "give the agent a tool" and "keep the history" now stand for familiar operations on files, lists, dictionaries and function calls.
 
 ## Diagnose an incorrect support answer
 
-In a [first-hand MTS Web Services account](https://habr.com/ru/companies/ru_mts/articles/1051784/), Vladimir Drobot describes an assistant that suggested adding dummy records or requesting a feature change. The actual solution was an existing setting. The team updated its Confluence instructions and reported that similar requests were then handled correctly.
+Back to [the MTS case](https://habr.com/ru/companies/ru_mts/articles/1051784/) from the introduction: the support agent suggested a workaround when a simple setting would have solved the problem. The team added the setting to its Confluence instructions, and similar requests were then handled correctly.
 
-Our exercises suggest a diagnostic sequence: locate the right document, check whether retrieval selected it, inspect the text actually sent, then compare the generated advice with that evidence. A domain specialist can supply the correct resolution and build a repeatable acceptance case without implementing the entire application. The article is a specific team's experience, not a general accuracy guarantee.
+The order of investigation is now clear. Find the instruction and check that it contains the right paragraph. Check whether the search returned it. Look at what the program actually sent to the model. If the paragraph was not there, the source or the search needs attention. If it was there and the answer still contradicts it, look at the messages, the answering rule and the model itself.
 
-## Prepare evidence for process analysis
+A support specialist or analyst does not have to build the whole system to take part in such an investigation. They know the right resolution, can improve the document and can prepare a control case: the customer's request, the right source, an acceptable answer. The event log and the scenarios from section 4 make that check repeatable after the model or the search changes.
 
-In [Alfa-Bank's process-mining account](https://habr.com/ru/companies/alfa/articles/966570/), Andrey Shalyagin describes moving from a separate assistant for scripts to an integration that supplies process context and metrics to a model. The generated hypotheses give analysts starting points for investigation.
+## Use AI to investigate a business process
 
-For our own example, suppose approval requests take several days. An analyst could prepare stage durations and the actual approval policy, then ask for hypotheses supported by those records. Missing information should lead to a qualification or follow-up request, not a confident invented cause. This example illustrates the method; it is not a reported result from that bank.
+In [Alfa-Bank's process-mining account](https://habr.com/ru/companies/alfa/articles/966570/) (in Russian), Andrey Shalyagin describes how an AI assistant first helped analysts write SQL and Python scripts without seeing the process data, and how the model was later connected to the analytics platform and given process context and metrics to suggest hypotheses.
 
-The course does not implement that corporate integration. It helps specify the sources, fields and operations needed to make one inspectable. The analyst still checks hypotheses against real cases and the people who perform the work.
+Imagine a similar task of your own: a manager wants to know why request approvals take several days. The model can be given an export of stage durations and the documented approval procedure; one tool returns durations, another reads the procedure. If key information is missing, a clarifying question from the model is worth more than a confident explanation invented from the process name. And a conclusion such as "the delay is in approval" still has to be checked against real requests: waiting may depend on incomplete requests, weekends or the agreed working order.
 
-## Evaluate the whole workflow
+The course does not build a connection to a corporate platform, but after it you know what to put into the requirements: which sources are needed, which fields, which operations are allowed and without which information a conclusion counts as unverified.
 
-In a [Raiffeisen Bank account](https://habr.com/ru/companies/raiffeisenbank/articles/1054656/), Marat Kinyabulatov explains why faster individual tasks need not make the whole delivery process faster: work can still wait for requirements, review, testing or another team.
+## Check whether the rollout paid off
 
-Apply that question to a support pilot. Faster drafting is useful, but record review time, corrections, repeat contacts and time to an actual resolution too. These are proposed measures for this example, not outcomes claimed by the banking article. Our scenario checks provide a small starting point: define the expected outcome before running and preserve the actual result.
+In [an article about AI at Raiffeisen Bank](https://habr.com/ru/companies/raiffeisenbank/articles/1054656/) (in Russian), Marat Kinyabulatov points to an important trap: individual team members may work faster while the task still waits for requirements, testing, approval or another department. More AI usage does not by itself mean the whole process got faster.
 
-A manager can use that evidence to decide which cases can proceed automatically and which need human review. An analyst can translate it into acceptance criteria rather than relying on an attractive demonstration.
+The same thinking applies to a support pilot. Suppose the assistant drafts replies faster. How long does an agent spend checking each draft? How often must it be rewritten? Did repeat contacts go down? Does the customer get a resolution sooner?
 
-## Choose a next experiment
+The scenarios from lesson 4.4 extend naturally here: collect typical requests, agree on the right answers with specialists and record the result together with the time spent checking and fixing it. Successful completion of the program then becomes one signal among several, next to the usefulness of the answer and the outcome of the request. A manager can use this to decide which tasks the assistant can take on, where human review stays mandatory and which cases are better left to staff for now.
 
-Pick a familiar, checkable task: find a rule in an internal instruction, draft an answer from approved material or compare records in a permitted sample. Write down what counts as correct, what information may be missing and which action needs approval. Start with copies of data you are allowed to use.
+## What to try next
 
-Follow the same path: prepare the source, send explicit data, record actions and compare results across several cases. Change one substantial factor at a time. That will help distinguish an improved document, retrieval rule, instruction or model from a lucky answer.
+For your next practice, pick a familiar task where you can check the answer yourself: finding a rule in an internal instruction, drafting a reply to a request or matching records in an export. Start with copies of data you are allowed to use this way. Write down in advance what counts as a correct result, when the data is insufficient and which action needs approval.
 
-You can continue as an analyst, process owner or member of an implementation team. The useful output is a testable description of what the system receives, does, records and hands back to a person. Return to [the lesson index](README.md) when you need to revisit a particular mechanism.
+Then follow the path you already know: prepare the source, pass it to the model, record its actions and check the result on several different cases. Change one significant thing at a time, so you can tell what helped: a better document, a different selection of data, a clearer instruction or another model.
+
+The result of such work can be a task description for an integration that both developers and the client accept: what the system receives, what it does, when it hands the decision to a person and by which criteria its work is accepted.
+
+Return to [the lesson index](README.md).

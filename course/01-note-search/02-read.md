@@ -1,24 +1,39 @@
 # Read notes from a file
 
-Our search accepts a list of strings, while real notes are stored in a file. The next function will connect those two forms of data. Keeping reading separate from searching lets us examine a problem at the right place: was the file read correctly, or did the search select the wrong lines?
+> **Where we are.** The assistant can search notes, but we typed the notes straight into the code. Now we take them from a file.
+> `notes file -> [reading] -> search -> model -> answer`
 
-## Open this starter
+In real systems the knowledge lives outside the program: in a file, a knowledge base, a wiki. Before searching, the assistant has to read it, and this step can fail too.
 
-Download [this lesson starter](../../downloads/lesson-01-02-read.zip), choose **Extract All**, and open the extracted `lesson-01-02-read` folder with **File -> Open** in PyCharm. In **View -> Tool Windows -> Project**, find `notes.py` -> `read_notes`. Earlier components are prepared; the current function deliberately pauses with `NotImplementedError`. Keep your previous project in its own folder.
+Suppose the assistant replies "No information found." That can mean two quite different things. The file was read and simply contains nothing relevant - then whoever owns the document has to add it. Or the file was never opened: it was moved, renamed or the program lacks access - then it is a job for the administrator. If the program reports both cases with the same message, the question goes to the wrong person. So we write reading in a way that keeps the two cases apart.
 
-## Follow the data
+## Open the starter
 
-`path` is a `Path` object identifying a file, not its contents. For example, a file containing `Python lists`, a blank line and `Agent tools` becomes the single string `'Python lists\n\nAgent tools\n'` after `read_text`. Here `\n` represents a line break. `splitlines()` turns it into `['Python lists', '', 'Agent tools']`.
+Download [this lesson's starter](../../downloads/lesson-01-02-read.zip), extract it and open the `lesson-01-02-read` folder in PyCharm. The current task is `read_notes` in `notes.py`; the search from the previous lesson already works.
 
-We need a list of nonempty, trimmed lines. Whitespace-only lines are not notes, while repeated nonempty lines remain repeated.
+## Look at the data
 
-<img src="../../assets/01-note-search/read-notes.gif" width="480" alt="Data flow for read notes from a file">
+The file `data/notes.txt` holds one note per line. A file edited by hand often has stray spaces and blank lines, for example:
 
-[Static diagram](../../assets/01-note-search/read-notes.png). This illustrates the data flow; it is not a recording of an unfinished starter running.
+```text
+Python lists
 
-## Complete the function
+  Agent tools
+```
 
-Keep the prepared function header. Fill each `...` using the hints below, then remove the `raise NotImplementedError(...)` pause in the starter. The displayed fragment explains the function body; it is not a separate script to paste elsewhere.
+After `path.read_text(encoding='utf-8')` this becomes one string: `'Python lists\n\n  Agent tools\n'`, where `\n` marks a line break. `splitlines()` cuts it into a list: `['Python lists', '', '  Agent tools']`.
+
+**Guess before reading on:** what is wrong with that list if we hand it to the search?
+
+There is an empty element, and spaces are still stuck to "Agent tools". The search needs clean notes: `['Python lists', 'Agent tools']`.
+
+<img src="../../assets/01-note-search/read-notes.gif" width="480" alt="File text becomes a list of clean notes">
+
+[Static version](../../assets/01-note-search/read-notes.png).
+
+## Your turn
+
+In `read_notes`, reading the file and splitting it into lines are already done, and the empty list `cleaned_notes` is created. Replace `raise NotImplementedError(...)` with the loop and fill in the gaps:
 
 ```python
 def read_notes(path: Path) -> list[str]:
@@ -32,16 +47,25 @@ def read_notes(path: Path) -> list[str]:
     return cleaned_notes
 ```
 
-Read the text with `path.read_text(encoding='utf-8')`. UTF-8 specifies how file bytes become characters. Use `text.splitlines()` for the loop. For each line, compute `cleaned = line.strip()`; append `cleaned` only if it is nonempty. Return the accumulated list after the loop.
+1. `cleaned_line` gets `line.strip()`, the line without spaces at the ends.
+2. The condition is `cleaned_line` itself: an empty string counts as false in Python, so empty lines are skipped.
+3. `append` receives `cleaned_line`, not the original `line` with its spaces.
 
-An empty file produces `[]`. If the file does not exist, `read_text` raises `FileNotFoundError`. Let that error reach the caller for now. Returning an empty list in both cases would hide the difference between missing data and a valid empty source.
+`encoding='utf-8'` tells Python how the bytes of the file turn into characters. If the file is empty, the loop never runs and the function returns an empty list.
 
-## Run and inspect
+## Run it
 
-Open `demo.py` directly under **Project -> lesson-01-02-read**, right-click in its editor and choose **Run 'demo'**. Read the result in **View -> Tool Windows -> Run**. A `Complete ...` message means the exercise pause is still present.
+Open `demo_read.py`, right-click in the editor and choose **Run 'demo_read'**. The Run window shows the list of notes from `data/notes.txt`, each without stray spaces. Compare it with the file itself.
 
-Run `demo.py`. It calls `read_notes` on the supplied `data/notes.txt` and prints the returned list. Compare its elements with the file itself. For an extra experiment, copy the data file, add a blank line and spaces at the ends of one line, and call the function on that copy. The visible note text should stay the same.
+## Try to break it
 
-After a successful demonstration, optionally open the relevant file under `tests`, right-click its test class and run it. Those checks repeat defined expectations; they do not certify every possible input or every model answer.
+1. **Empty file.** Delete everything in `data/notes.txt` and save. `demo_read.py` prints `[]`: the file was read and has no notes.
+2. **Missing file.** Restore the text and rename the file, for example to `notes_old.txt`. Now the program stops with `FileNotFoundError` and the name of the file it could not find.
 
-[All lessons](../../course/README.md).
+Compare the two. An empty list says the document itself needs content. `FileNotFoundError` says the program never reached the document. That is why we do not catch the error and turn it into an empty list: the assistant would then say "no information found", and nobody would learn it never opened the document.
+
+Rename the file back before the next lesson.
+
+## What we have now
+
+The assistant reads its notes from a file, and the result tells you where to look when something goes wrong: in the content of the document or in access to it. Next: [save a search result](03-journal.md), so that after a run you can see exactly what the search found. Back to [all lessons](../README.md).

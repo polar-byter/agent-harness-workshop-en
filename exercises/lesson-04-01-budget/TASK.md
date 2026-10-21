@@ -1,18 +1,31 @@
 # Limit the number of actions
 
-A model may keep requesting work without producing a final answer. We need an explicit stopping condition even when the model does not choose to stop. This lesson separates a request to be economical from counters enforced by the application.
+> **Where we are.** The assistant has an agent loop: the model chooses an action, the program carries it out, the result returns to the model. This section is about controlling that loop, starting with stopping it in time.
+> `model -> action -> result -> [limit check] -> model ...`
 
-## Open this starter
+Imagine the agent has already read the notes but keeps asking to read them again. Each request is permitted, so `dispatch_tool` lets it through. Meanwhile the loop keeps turning, using time and, with a cloud service, money. A manager responsible for the pilot's budget will not be pleased.
 
-Download [this lesson starter](https://github.com/polar-byter/agent-harness-workshop-en/blob/main/downloads/lesson-04-01-budget.zip), choose **Extract All**, and open the extracted `lesson-04-01-budget` folder with **File -> Open** in PyCharm. In **View -> Tool Windows -> Project**, find `control.py` -> `check_budget`. Earlier components are prepared; the current function deliberately pauses with `NotImplementedError`. Keep your previous project in its own folder. The main run uses the connection saved in the [required connection lesson](https://github.com/polar-byter/agent-harness-workshop-en/blob/main/course/02-note-assistant/04-connect.md). The offline `demo_check.py` remains a separate code check.
+A line in the prompt such as "stop when you have the answer" does not solve this: the decision to stop cannot be left to the model alone. So the program counts the model requests and the tool calls itself and stops as soon as either counter reaches its limit. We count actions here; the cost in tokens is a separate topic, covered in the statistics exercise.
 
-## Follow the data
+## Open the starter
 
-`state = {'steps': 2, 'tool_calls': 1}` and `limits = {'steps': 4, 'tool_calls': 2}` allow another iteration. Both current counts must be strictly less than their limits. A step counts a model decision; a tool call counts an executed operation. These are not token or currency budgets.
+Download [this lesson's starter](https://github.com/polar-byter/agent-harness-workshop-en/blob/main/downloads/lesson-04-01-budget.zip), extract it and open the `lesson-04-01-budget` folder in PyCharm. The current task is `check_budget` in the new file `control.py`.
 
-## Complete the function
+## Look at the data
 
-Keep the prepared function header. Fill each `...` using the hints below, then remove the `raise NotImplementedError(...)` pause in the starter. The displayed fragment explains the function body; it is not a separate script to paste elsewhere.
+Suppose the program has asked the model twice and run one tool. We allow at most four requests and two tool calls. What has been done is in `state`, the limits are in `limits`:
+
+```python
+state = {'steps': 2, 'tool_calls': 1}
+limits = {'steps': 4, 'tool_calls': 2}
+state['steps'] < limits['steps']   # True
+```
+
+Both counters are below their limits, so another step is allowed. As soon as either one reaches its limit, the function returns `False` and the program stops the run.
+
+## Your turn
+
+`check_budget` so far only reads the two counters. Replace `raise NotImplementedError(...)` with the code below and fill in the gaps:
 
 ```python
 def check_budget(state: dict, limits: dict) -> bool:
@@ -26,14 +39,29 @@ def check_budget(state: dict, limits: dict) -> bool:
     return steps_available and tools_available
 ```
 
-Keep the prepared validation of integer counters and positive limits. Return the conjunction of `state['steps'] < limits['steps']` and `state['tool_calls'] < limits['tool_calls']`.
+1. `steps_available` is the comparison `state['steps'] < limits['steps']`.
+2. `tools_available` is the same comparison for `'tool_calls'`.
 
-The caller, `run_controlled`, updates the counts. Do not increment them in `check_budget`, which should only inspect them. Equality with either limit must return `False`; negative counts and invalid types raise errors rather than granting permission.
+`and` returns `True` only when both comparisons are true. When a counter equals its limit, there is no next step.
 
-## Run and inspect
+The loop at the top checks that the values are whole numbers. `type(value) is int` is stricter than it looks: in Python `True` behaves like the number `1`, and without this check a counter could quietly be a boolean.
 
-Open `demo.py` directly under **Project -> lesson-04-01-budget**, right-click in its editor and choose **Run 'demo'**. Read the result in **View -> Tool Windows -> Run**. A `Complete ...` message means the exercise pause is still present.
+The function changes nothing and starts nothing: it only tells the calling code whether it may continue. The counters are increased by the caller, `run_controlled`.
 
-Run the live demonstration and inspect its final state. In the offline checks, verify the boundary where a count equals its limit. When the budget is exhausted, the controlling function returns `'budget_limit'` and does not start another decision request. That outcome may be correct even if no final answer was produced.
+## Run it with the model
 
-After a successful demonstration, optionally open the relevant file under `tests`, right-click its test class and run it. Those checks repeat defined expectations; they do not certify every possible input or every model answer.
+Open `demo.py` and choose **Run 'demo'**. The model chooses actions, and your function checks the counters before each step. The limits in `demo.py` are four requests and three tool calls. The Run window shows the commands, their results and either the model's answer or a message that the limit was reached.
+
+## Check the function on its own
+
+Open `demo_check.py` and choose **Run 'demo_check'**. With `steps=2`, `tool_calls=1` and limits of `4` and `2`, we expect `True`. To run the prepared checks, run `class LessonTests` in `tests/test_lesson.py`.
+
+## Try to break it
+
+In `demo.py` change the tool-call limit from `3` to `1` and run again. If the model wants more than one action, the program stops it after the first and reports the limit. The decision is made by the code, not by the model. Change it back to `3`.
+
+## What we have now
+
+The agent can no longer run forever: the number of requests and actions is limited in the program, whatever the model thinks about its task. It is another guardrail, next to the check of permitted tools.
+
+Next: [choose history for the next request](https://github.com/polar-byter/agent-harness-workshop-en/blob/main/course/04-run-control/02-context.md). Back to [all lessons](https://github.com/polar-byter/agent-harness-workshop-en/blob/main/course/README.md).

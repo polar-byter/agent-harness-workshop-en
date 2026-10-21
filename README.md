@@ -1,16 +1,16 @@
 # Agent Harness Workshop
 
-Build a small assistant you can follow from input to result. Write a search tool, connect a real model, execute permitted tool requests and inspect the history of an agent loop. Then add limits, scenario checks and an approved code change.
+A course on how AI agents work and how to check their work. Step by step you write in Python a small assistant that answers from a set of notes: a search tool, a connection to a real model, tool requests the program checks before running, an agent loop with limits and a log, and finally a coding agent whose change is applied only with your approval and then tested.
 
-This English edition is for analysts, process owners, domain specialists and programmers new to Python. Each practical lesson has concrete inputs, a partial function and a hint for every missing step.
+The course is for analysts, process owners and managers, system administrators, support and QA specialists, and programmers new to Python. Each lesson works on concrete data, gives you a started function and a hint for every gap.
 
 **[Start here](course/00-introduction.md)** / **[All lessons](course/README.md)** / **[Who it is for](course/who-this-is-for.md)** / **[Results and applications](course/conclusion.md)**
 
 ## Learn directly from GitHub
 
-Open a lesson in the browser. Download its linked ZIP or browse the matching folder under [exercises](exercises/README.md). Extract that individual project and open it in PyCharm; browsing a file on GitHub does not execute Python.
+Read the lessons in the browser. For practice, download a lesson's ZIP from the link in the lesson, or browse the matching folder under [exercises](exercises/README.md), then open that single project in PyCharm.
 
-There are 18 main lessons, six optional exercises and 24 independent starters. Use the prepared beginning of the current function, then compare the observed result with the lesson. Earlier implementations are supplied so you can revisit any step independently.
+There are 18 main lessons, six optional exercises and 24 independent starters. In each starter the earlier parts already work, so you can take any lesson on its own.
 
 ## What you need
 
@@ -18,4 +18,4 @@ The main route uses Python 3.12 or newer, PyCharm and the standard library. The 
 
 English instructions, prompts, data, diagrams and starter archives are maintained here. The Russian edition remains separate. Provider choices and free offerings may change; follow the linked official instructions when connecting a service.
 
-Repository checks validate links, packaging and unfinished starter behavior without making a model request. They are distinct from testing your completed exercise or the quality of live model output.
+The repository checks cover links, packaging and the starters' unfinished state without calling a model. Your own solution is checked by the tests inside each exercise.

@@ -1,23 +1,42 @@
 # Restrict the working folder
 
-A coding assistant needs to read and change a file, but a model-supplied path should not select any file on the computer. We will check the path before further file operations, using a dedicated exercise workspace.
+> **Where we are.** The assistant can search, answer and work in a controlled loop. In the last section it starts changing code - this is how Claude Code, Cursor and other coding agents work. First, we limit which files it may touch at all.
+> `model's proposal -> [path check] -> read -> change -> check`
 
-## Open this starter
+The exercise has a small module, `prices.py`, that calculates the total price of an order, and it has a bug. We will ask the model to propose a fix. But before the program reads or changes a file because a model asked, it has to decide which files are allowed. The model may name `prices.py`, or `../outside.py`, a file outside the working folder, or a system file anywhere on the disk.
 
-Download [this lesson starter](https://github.com/polar-byter/agent-harness-workshop-en/blob/main/downloads/lesson-05-01-paths.zip), choose **Extract All**, and open the extracted `lesson-05-01-paths` folder with **File -> Open** in PyCharm. In **View -> Tool Windows -> Project**, find `workspace.py` -> `workspace_path`. Earlier components are prepared; the current function deliberately pauses with `NotImplementedError`. Keep your previous project in its own folder. The main run uses the connection saved in the [required connection lesson](https://github.com/polar-byter/agent-harness-workshop-en/blob/main/course/02-note-assistant/04-connect.md). The offline `demo_check.py` remains a separate code check.
+This is the question an administrator asks before letting an agent near a server: what exactly can it reach? The answer belongs in code. `workspace_path` takes a file name, works out its full path and checks that it lies inside the exercise folder `workspace` and ends in `.py`. Every other function in this section gets file paths only through it.
 
-## Follow the data
+## Open the starter
 
-`root` is the exercise `workspace` folder and `relative` might be `'prices.py'`. Resolving their combination produces an absolute path. A separate experiment with `'../outside.py'` attempts to leave the root and must be rejected.
+Download [this lesson's starter](https://github.com/polar-byter/agent-harness-workshop-en/blob/main/downloads/lesson-05-01-paths.zip), extract it and open the `lesson-05-01-paths` folder in PyCharm. The current task is `workspace_path` in `workspace.py`. The `workspace` folder holds the exercise `prices.py` and its tests.
 
-## Complete the function
+## Look at the data
 
-Keep the prepared function header. Fill each `...` using the hints below, then remove the `raise NotImplementedError(...)` pause in the starter. The displayed fragment explains the function body; it is not a separate script to paste elsewhere.
+`prices.py` contains one function:
 
 ```python
-def workspace_path(root: Path, relative: str) -> Path:
-    root = root.resolve()
-    candidate = (root / relative).resolve()
+def total_price(price, quantity):
+    return price + quantity
+```
+
+The total should be price times quantity, but the code adds them. The agent will fix that in the next lessons.
+
+The path is built like this:
+
+```python
+root = ROOT / 'workspace'
+relative = 'prices.py'
+candidate = (root / relative).resolve()
+```
+
+The `/` operator on a `Path` joins a folder and a file name, and `resolve()` works out the full path, expanding `..` and links. The full path is what we check: the text `'workspace/../secret.py'` starts with the right folder name but leads outside it.
+
+## Your turn
+
+The full path is already computed in `workspace_path`. Replace `raise NotImplementedError(...)` with the code below and fill in the gap:
+
+```python
     if Path(relative).is_absolute() or not candidate.is_relative_to(root):
         raise ValueError('The path must stay inside the exercise folder')
     if ...:
@@ -25,14 +44,32 @@ def workspace_path(root: Path, relative: str) -> Path:
     return candidate
 ```
 
-Resolve `root` and `(root / relative)`. Reject an originally absolute `relative` or a candidate that is not `is_relative_to(root)`. Also require suffix `'.py'`, then return the candidate Path.
+In the gap, compare the extension: `candidate.suffix != '.py'`. `suffix` returns the end of the name with its dot, such as `'.py'`, and `!=` means "not equal".
 
-Check the resolved relationship rather than a text prefix: similarly named folders are not necessarily parent and child. The prepared exercise focuses on this path rule; do not interpret it as a general sandbox.
+The first check is ready: `is_absolute()` rejects an absolute path such as `C:\Windows\...`, and `is_relative_to(root)` checks that the full path lies inside the working folder. If both checks pass, the function returns the checked path. It does not open the file: reading or writing is done by the calling code, and only at this address.
 
-## Run and inspect
+## Run it with the model
 
-Open `demo.py` directly under **Project -> lesson-05-01-paths**, right-click in its editor and choose **Run 'demo'**. Read the result in **View -> Tool Windows -> Run**. A `Complete ...` message means the exercise pause is still present.
+Open `demo.py` and choose **Run 'demo'**. The program calls your function, reads the permitted `workspace/prices.py` and asks the model to propose a fix. The Run window shows the path and the proposed code. Nothing is written yet.
 
-Run `demo.py` and inspect the permitted relative path. In the offline checks, an outside path should raise `ValueError`. Executing a Python file remains ordinary process execution with operating-system permissions. A path check alone does not isolate unknown code, so use the supplied exercise workspace for the course.
+## Check the function on its own
 
-After a successful demonstration, optionally open the relevant file under `tests`, right-click its test class and run it. Those checks repeat defined expectations; they do not certify every possible input or every model answer.
+Open `demo_check.py` and choose **Run 'demo_check'**. We expect:
+
+```text
+workspace/prices.py
+```
+
+To run the prepared checks, run `class LessonTests` in `tests/test_lesson.py`.
+
+## Try to break it
+
+In `demo_check.py`, replace `'prices.py'` with `'../notes.py'` and run. We expect the error "The path must stay inside the exercise folder". Then try `'tests/README.md'`: the file is inside the folder but is not Python, so the error is different. Put `'prices.py'` back.
+
+## What we have now
+
+The file boundary has moved from a wish in the model's instructions into the program's code. If the agent asks for a file outside the folder, the program refuses, however confidently it asks.
+
+This boundary has a limit an administrator should know about. The function controls which files our program opens. If an agent is allowed to run code, that code can reach any file the user can, and running untrusted code safely requires a separate sandbox, which this course does not build.
+
+Next: [preview a proposed change](https://github.com/polar-byter/agent-harness-workshop-en/blob/main/course/05-coding-harness/02-diff.md). Back to [all lessons](https://github.com/polar-byter/agent-harness-workshop-en/blob/main/course/README.md).

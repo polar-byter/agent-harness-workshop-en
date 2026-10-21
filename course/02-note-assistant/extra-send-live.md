@@ -1,25 +1,31 @@
 # Optional: follow send_live from messages to a response
 
-Our note assistant starts with a question and one source note. `build_messages` has already put them into message dictionaries. The job of `send_live(messages)` is to send those messages through the selected connection and return a response the rest of the course understands.
+> **Where we are.** In lesson 2.4 the program sent a question and a note to a model and got an answer back. Here we read the ready code that does the sending. Nothing to write, only to follow.
+
+Suppose the model answered beyond its notes. Before blaming the model, it is worth checking what it actually received: did the rule and the note reach it, where did the program send the request, and what text did it read from the reply? For that you need to know the path inside `transport.py`, from the call to `send_live` back to the result. Open `transport.py` in the `lesson-02-04-connect` project and follow along.
 
 ## Read the connection
 
-`read_connection()` opens the settings file written by `configure_model.py`. It obtains a provider, model ID and any required key. This file lives outside the starter, so copying a lesson does not copy credentials. The English edition uses its own settings location.
+`send_live(messages)` first calls `read_connection()`, which opens the settings file written by `configure_model.py`. It returns the service, the model ID and the key, if the service needs one. The file lives outside the project folders, so copying a lesson never copies your key. If no connection has been saved, the function stops before any network request.
 
-## Prepare provider messages
+## Prepare the messages for the service
 
-The supported backends receive our developer instruction as a system message. The function builds new message dictionaries with that role change; it does not mutate the caller's original list. The text of the instruction and the source notes remain the same.
+The supported services expect our rule as a `system` message rather than `developer`. `send_live` builds new message dictionaries with that role changed and leaves the caller's list untouched. The text of the rule and the notes stays exactly the same.
 
-For Ollama it builds a local `/api/chat` request with streaming disabled, CPU-oriented settings and bounded context and output options. For the API providers it builds a chat-completions request with the chosen model and messages. The request contains the source text we supplied; the service does not independently read `data/notes.txt` from our disk.
+For Ollama it builds a request to the local `/api/chat` address with streaming switched off, calculation on the processor and limits on context and answer length. For the API services it builds a chat-completions request with the chosen model and messages. The request carries the note we passed in; the service never reads `data/notes.txt` from your disk.
 
 ## Send and decode
 
-`request_json` serializes the request dictionary, encodes it as UTF-8 bytes and describes a POST request with its headers. `urlopen` performs the exchange with a timeout. The response bytes are decoded and parsed as JSON. HTTP and connection errors are reported instead of becoming an invented answer.
+`request_json` turns the request dictionary into a JSON string and then into UTF-8 bytes, and describes a POST request with its headers in a `Request` object. Creating that object sends nothing; `urlopen` does the actual exchange, with a timeout. The reply arrives as bytes, which are decoded into text and parsed back into a dictionary. HTTP errors and connection problems are reported as errors, never turned into an empty answer.
 
-## Normalize the provider response
+## Bring every service to one format
 
-Ollama and API providers return different fields. The adapter checks whether generation finished and extracts the provider's message content. `course_response(text)` wraps that text as a completed course response with an output message and an output_text part. `extract_answer` can then work with this shared format.
+Ollama and the API services return their text in different fields. `send_live` checks that generation finished normally and takes the text from the field where that service keeps it. `course_response(text)` then wraps the text in the course's format with `status` and `output`, so `extract_answer` works the same way whichever service you chose.
 
-This wrapper is a course convention, not a claim that every service uses the same wire protocol. It also does not verify the factual content of the sentence. A generated answer can be complete and still be unsupported by the notes.
+This step checks that the answer is complete; whether it agrees with the note is still for you to judge.
 
-The optional [prepared-modules workbook](../extra-prepared-modules/README.md) lets you implement message construction, request serialization and decision parsing yourself. Return to [the live connection lesson](04-connect.md) for the actual run sequence.
+## Check yourself
+
+Without running the model, find three places in `transport.py`: where the role is changed, where `Request` only describes the request and where `urlopen` sends it. Then follow the answer string back to the `print` in `demo.py`. If the model ever answers beyond its notes, you will be able to confirm that the rule and the note did reach it, and the cause really is the model.
+
+To write these parts yourself, try the optional [prepared-modules workbook](../extra-prepared-modules/README.md). Back to [the connection lesson](04-connect.md).

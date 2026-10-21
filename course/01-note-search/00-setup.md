@@ -1,11 +1,33 @@
 # Open the first project
 
-Before writing a search function, let us make sure you can find its module and run a prepared example. Download the [first starter](../../downloads/lesson-01-01-search.zip), extract it and open the `lesson-01-01-search` folder through **File -> Open** in PyCharm.
+> **Where we are.** The course starts with the first question from the MTS case: did the program find the right line? Before writing the search, we get PyCharm and Python ready.
 
-In **View -> Tool Windows -> Project**, expand the root. Open `start.py`, right-click inside the editor and run it. In **Run** you should see `Project opened. Python is running.`. This checks the local interpreter without a model account or network request.
+Our first project is a small set of notes and a function that finds the notes mentioning a word. Later the program will read the notes from a file and record what it found. Today the goal is modest: open the project and make sure Python runs.
 
-Now open `notes.py`. It contains `find_notes`, `find_notes_alt` and `read_notes`. The first two are the current exercise; file reading belongs to the next lesson. A deliberate `NotImplementedError` marks work still to be completed. The comments and prepared beginnings are part of the starter, not a claim that the program is finished.
+## Install PyCharm and Python
 
-Open `demo_search.py` next. It supplies the three note strings and the query for the first lesson. You do not need to type these values into a console: the example already calls your functions with them. Running it now should show the unfinished-function message.
+PyCharm is an editor for writing and running Python code; the free edition is enough for this course. Download it from the [JetBrains site](https://www.jetbrains.com/pycharm/download/). You also need Python itself, version 3.12 or newer, from [python.org](https://www.python.org/downloads/windows/). In the first installer window, tick **Add python.exe to PATH**, then click **Install Now**. If Python is already installed, you can skip this.
 
-The [search lesson](01-search.md) explains the values and the two implementations. Keep [the PyCharm guide](../pycharm.md) nearby if you lose the Project or Run panel. Optional tests come after a successful demonstration, rather than being an extra setup hurdle.
+## Open the starter
+
+Download the [first starter](../../downloads/lesson-01-01-search.zip), right-click it in File Explorer and choose **Extract All**. In PyCharm choose **Open** on the welcome screen (or **File -> Open**) and select the extracted `lesson-01-01-search` folder.
+
+Open **View -> Tool Windows -> Project** and expand the root folder. The project has a few files: `notes.py` will hold reading and searching, `app.py` will connect them, `journal.py` will save results, and the `tests` folder holds prepared checks. You will not write all of these at once; the first lesson is only about searching.
+
+## Choose the Python interpreter
+
+PyCharm needs to know which Python to use. Open **File -> Settings -> Python -> Interpreter** (in some versions **Project: lesson-01-01-search -> Python Interpreter**). If Python 3.12 or newer is already selected, you are done. If the field says **No interpreter**, click **Add Interpreter -> Add Local Interpreter**, choose **Virtualenv** and select your installed Python as the **Base interpreter**. The [JetBrains guide](https://www.jetbrains.com/help/pycharm/configuring-python-interpreter.html) shows the same steps with screenshots.
+
+## First run
+
+Open `start.py`, right-click inside the editor and choose **Run 'start'**. The Run window at the bottom should show:
+
+```text
+Project opened. Python is running.
+```
+
+PyCharm found Python and ran a file from the project. Now open `demo_search.py`: it calls the search functions with three prepared notes and a query. Run it the same way. For now it prints a message that the function is not finished yet - writing it is the first lesson.
+
+If PyCharm says no interpreter is selected, go back to the previous section. If there is no **Run** item in the menu, check that you opened `start.py` from the extracted folder and not from inside the ZIP. A diagram of the PyCharm windows is in [find a file and run an example](../pycharm.md).
+
+Next: [write a search function](01-search.md).

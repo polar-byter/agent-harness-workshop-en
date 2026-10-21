@@ -1,22 +1,35 @@
 # Save a search result
 
-A console message disappears among later runs. A journal lets us check which query produced which result. We will save one JSON object per line, keeping earlier runs instead of replacing them. This simple record will later help us separate what the program actually found from what a model says it found.
+> **Where we are.** The assistant reads notes from a file and finds lines by keyword. So far the result exists only in the Run window. Now the program will write it to a journal.
+> `file -> reading -> search -> [journal]`
 
-## Open this starter
+Imagine a user got a wrong answer yesterday and today you are working out why. The Run window is long closed, and there is no way to see what the search found then. Was the right note among the results? Which query did the search actually receive? Without a record you cannot answer, and these are exactly the questions the MTS case starts with.
 
-Download [this lesson starter](../../downloads/lesson-01-03-journal.zip), choose **Extract All**, and open the extracted `lesson-01-03-journal` folder with **File -> Open** in PyCharm. In **View -> Tool Windows -> Project**, find `journal.py` -> `write_result`. Earlier components are prepared; the current function deliberately pauses with `NotImplementedError`. Keep your previous project in its own folder.
+So we will write every search result to a file: the query and the matching notes. Each new record goes at the end, so earlier ones stay available for comparison.
 
-## Follow the data
+## Open the starter
 
-`result = {'query': 'python', 'matches': ['Python lists']}` is a dictionary: keys identify the query and matching lines. `json.dumps(result, ensure_ascii=False)` returns a JSON string. Writing that string followed by `"\n"` creates one record in `runs.jsonl`. JSONL is a convention: each line is a separate valid JSON value.
+Download [this lesson's starter](../../downloads/lesson-01-03-journal.zip), extract it and open the `lesson-01-03-journal` folder in PyCharm. Reading and searching already work. The current task is `write_result` in `journal.py`.
 
-<img src="../../assets/01-note-search/lesson-03-journal.gif" width="480" alt="Data flow for save a search result">
+## Look at the data
 
-[Static diagram](../../assets/01-note-search/lesson-03-journal.png). This illustrates the data flow; it is not a recording of an unfinished starter running.
+Suppose a search for "python" found one note. The result is kept in a dictionary: `query` holds the query and `matches` the list of found notes. To write a dictionary to a text file, we turn it into a JSON string:
 
-## Complete the function
+```python
+result = {'query': 'python', 'matches': ['Python lists']}
+text = json.dumps(result, ensure_ascii=False)
+# '{"query": "python", "matches": ["Python lists"]}'
+```
 
-Keep the prepared function header. Fill each `...` using the hints below, then remove the `raise NotImplementedError(...)` pause in the starter. The displayed fragment explains the function body; it is not a separate script to paste elsewhere.
+`json.dumps` turns the dictionary into one line of text; `ensure_ascii=False` keeps any non-English letters readable. Each record takes its own line in the file. This format is called JSONL, JSON Lines.
+
+<img src="../../assets/01-note-search/lesson-03-journal.gif" width="480" alt="A result becomes one JSON line appended to the journal">
+
+[Static version](../../assets/01-note-search/lesson-03-journal.png).
+
+## Your turn
+
+In `write_result`, the string `text` is ready. Open the journal file and add it at the end. Replace `raise NotImplementedError(...)` with two lines and fill in the gap:
 
 ```python
 def write_result(path: Path, result: dict) -> None:
@@ -25,16 +38,27 @@ def write_result(path: Path, result: dict) -> None:
         stream.write(...)
 ```
 
-Open `path` with `path.open('a', encoding='utf-8')`: mode `'a'` appends. Use the stream inside `with`, which closes it when the block ends. Serialize `result` with `json.dumps(..., ensure_ascii=False)` and pass the resulting string plus `'\n'` to `stream.write`.
+Pass `text + '\n'`: the JSON itself and a line break after it. Without `'\n'` the next record would stick to the previous one.
 
-The function writes the supplied dictionary; it should not perform a new search. Its return value is `None`, because the useful effect here is a new line in the file. A missing parent folder is still a file-system error, not a successful record.
+The `'a'` in `path.open` means append mode: new lines go to the end of the file, and the file is created if it does not exist yet. Inside the `with` block, `stream` is the open file, and Python closes it when the block ends. The function returns nothing; its result is a changed file.
 
-## Run and inspect
+## Run it
 
-Open `demo.py` directly under **Project -> lesson-01-03-journal**, right-click in its editor and choose **Run 'demo'**. Read the result in **View -> Tool Windows -> Run**. A `Complete ...` message means the exercise pause is still present.
+Open `demo.py`, right-click in the editor and choose **Run 'demo'**. The Run window shows the last line of the journal:
 
-Run `demo.py` twice and open `runs.jsonl` in the Project panel. There should be a record for each run. Do not compare JSON key order or spacing as though they were the meaning of the result: parse a line with `json.loads` when you want its dictionary values.
+```text
+{"query": "python", "matches": ["Python lists"]}
+```
 
-After a successful demonstration, optionally open the relevant file under `tests`, right-click its test class and run it. Those checks repeat defined expectations; they do not certify every possible input or every model answer.
+A file `runs.jsonl` appears next to `demo.py`. Open it: it contains the same line.
 
-[All lessons](../../course/README.md).
+## Try to break it
+
+1. Run `demo.py` twice more and open `runs.jsonl`. There are now three records, each on its own line.
+2. Change `'a'` to `'w'` in `write_result` and run again. Only one record is left: mode `'w'` (write) empties the file every time. For a journal that would mean losing the whole history. Change it back to `'a'`.
+
+## What we have now
+
+Every run leaves a trace: which query the search received and what it found. Once a model uses the search, this journal shows which notes it really got. To check the function further, open `tests/test_lesson.py`, right-click `class LessonTests` and choose **Run**.
+
+Next: [connect reading, search and the journal](04-run.md) into one operation. Back to [all lessons](../README.md).

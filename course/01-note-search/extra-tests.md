@@ -1,11 +1,25 @@
 # Optional: let tests repeat the checks
 
-After your search demonstration works, it is worth borrowing a practice from programmers: write down the expected behavior so it can be checked again after an edit. A unit test calls a small part of the program with known inputs and compares the actual result with an expected one.
+In the [search lesson](01-search.md) the function found two notes out of three, as expected. But what happens with an empty query? With a duplicate note? With a word that is nowhere in the notes? Checking all that by hand after every edit gets tedious, and sooner or later a case gets forgotten.
 
-For example, searching `['Python lists', 'Agent tools']` for `'python'` should return `['Python lists']`. A second case can check a word with no match, and a third can check that a whitespace-only request is rejected. These cases help preserve the function's contract while you try another implementation.
+Programmers solve this with unit tests: small checks that call a function with chosen inputs and compare the result with the expected one. You write the condition once and rerun it whenever you like.
 
-In the extracted project, expand **tests**, open the lesson test file and find the test class. Right-click its name and choose **Run**. PyCharm shows each result in its test panel; read a failed assertion as a comparison of expected and actual values. Running the correct test matters: a test for an unfinished future function may fail for the expected reason.
+For example, a test gives the function `['Python lists', 'Agent tools']` and the query `'python'` and expects `['Python lists']`. If the function returns anything else, the test shows what was expected and what came back.
 
-Tests do not prove that every possible input is handled or that a generated answer is true. They make a chosen set of expectations repeatable. In the model lessons we keep deterministic code checks separate from live generation so an unstable service or differently worded answer does not obscure a Python error.
+<img src="../../assets/01-note-search/test-result.gif" width="480" alt="A test compares the expected list with the actual one">
 
-Return to [the search lessons](../README.md#searching-notes) whenever you want to repeat those checks.
+[Static version](../../assets/01-note-search/test-result.png).
+
+## Run the prepared tests
+
+In the `lesson-01-01-search` project, open `tests/test_lesson.py`. Right-click the line `class LessonTests` and choose **Run**. PyCharm [can run a single test class](https://www.jetbrains.com/help/pycharm/performing-tests.html), so there is no need to run the whole `tests` folder.
+
+The result appears at the bottom. The tests check both `find_notes` and `find_notes_alt`: letter case, spaces in the query, a duplicate note, no matches and an empty query. If a test fails, open its result: it shows the expected value and what the function returned, or the error that occurred. Find the cause in the function and run the tests again. Changing the expected value just to make a test pass would leave the test checking nothing.
+
+## What tests can and cannot tell you
+
+Tests check exactly the cases written into them. A passing run means the search works on those cases. If tomorrow a note contains "Pyhton" with a typo, the test will not notice; that case has to be added to it.
+
+In later lessons, `tests/test_lesson.py` checks that lesson's own function: reading the file, writing the journal or the combined run. Check which project is open in the Project panel before running.
+
+Back to [the search lesson](01-search.md) or on to [reading notes from a file](02-read.md).

@@ -1,22 +1,33 @@
 # Connect reading, search and the journal
 
-We have three operations, but a caller should not have to repeat their sequence for every search. `run_search` will read the source, normalize the request, select notes and save one result. It will also make unsuccessful searches explicit instead of treating every run as a match.
+> **Where we are.** The assistant has three separate functions: reading notes, searching and writing the journal. We combine them into one operation that an agent can call later.
+> `[file -> reading -> search -> journal]` -> result
 
-## Open this starter
+Right now, finding notes means calling three functions in the right order. In section 3 the agent will need a single "search" command, after which the program does the rest. We also add a status to the result: `found` when there are matches and `not_found` when there are none, so the outcome is visible without reading the list.
 
-Download [this lesson starter](../../downloads/lesson-01-04-run.zip), choose **Extract All**, and open the extracted `lesson-01-04-run` folder with **File -> Open** in PyCharm. In **View -> Tool Windows -> Project**, find `app.py` -> `run_search`. Earlier components are prepared; the current function deliberately pauses with `NotImplementedError`. Keep your previous project in its own folder.
+## Open the starter
 
-## Follow the data
+Download [this lesson's starter](../../downloads/lesson-01-04-run.zip), extract it and open the `lesson-01-04-run` folder in PyCharm. The current task is `run_search` in `app.py`.
 
-The input contains `notes_path`, `query = ' Python '` and `journal_path`. Reading produces a list of notes. Search returns the original matching lines. The returned dictionary contains the cleaned query, a status and the matches. With this source, the two matching lines are `Python functions return values.` and `Python lists keep item order.`.
+## Look at the data
 
-<img src="../../assets/01-note-search/lesson-04-run.gif" width="480" alt="Data flow for connect reading, search and the journal">
+`demo.py` passes three values: the path to `data/notes.txt`, the query `' Python '` and the path to the journal `runs.jsonl`. The function returns a dictionary with the query, the status and the found notes. The status takes one line:
 
-[Static diagram](../../assets/01-note-search/lesson-04-run.png). This illustrates the data flow; it is not a recording of an unfinished starter running.
+```python
+status = 'found' if matches else 'not_found'
+```
 
-## Complete the function
+A non-empty `matches` list gives `'found'`, an empty one gives `'not_found'`.
 
-Keep the prepared function header. Fill each `...` using the hints below, then remove the `raise NotImplementedError(...)` pause in the starter. The displayed fragment explains the function body; it is not a separate script to paste elsewhere.
+**Guess before running:** which of the six notes in `data/notes.txt` will the query "Python" find?
+
+<img src="../../assets/01-note-search/lesson-04-run.gif" width="480" alt="Reading, search and the journal combined in run_search">
+
+[Static version](../../assets/01-note-search/lesson-04-run.png).
+
+## Your turn
+
+In `run_search`, the notes are already read and the matches found. Replace `raise NotImplementedError(...)` with the code below and fill in the gaps:
 
 ```python
 def run_search(notes_path: Path, query: str, journal_path: Path) -> dict:
@@ -32,16 +43,31 @@ def run_search(notes_path: Path, query: str, journal_path: Path) -> dict:
     return result
 ```
 
-Use `query.strip()` for the query stored in the result, reject an empty string, call `read_notes(notes_path)`, then `find_notes(notes, query)`. Set the status to `'found'` if the matches list is nonempty and `'not_found'` otherwise. Store `query`, `status` and `matches` in one dictionary.
+1. `'query'` gets the query without surrounding spaces: `query.strip()`.
+2. `'status'` and `'matches'` get the variables `status` and `matches`.
+3. `write_result` takes the journal path `journal_path` first and then `result`.
 
-Call `write_result(journal_path, result)` once and return that same dictionary. Do not catch a missing source file and turn it into `'not_found'`: the search never took place in that situation.
+The journal is written after reading and searching on purpose: if the file is missing, the function stops earlier and the journal does not get a record of a search that never happened.
 
-## Run and inspect
+## Run it
 
-Open `demo.py` directly under **Project -> lesson-01-04-run**, right-click in its editor and choose **Run 'demo'**. Read the result in **View -> Tool Windows -> Run**. A `Complete ...` message means the exercise pause is still present.
+Open `demo.py` and choose **Run 'demo'**. The Run window shows:
 
-Run `demo.py` and compare the printed dictionary with the latest journal line. Run a missing-word query as well: it should save an empty matches list with `'not_found'`. This function will become useful to an agent without requiring any console interaction inside it.
+```text
+{'query': 'Python', 'status': 'found', 'matches': ['Python functions return values.', 'Python lists keep item order.']}
+```
 
-After a successful demonstration, optionally open the relevant file under `tests`, right-click its test class and run it. Those checks repeat defined expectations; they do not certify every possible input or every model answer.
+Compare it with the last line of `runs.jsonl`: they hold the same data.
 
-[All lessons](../../course/README.md).
+## Try to break it
+
+1. Change the query in `demo.py` to `'database'`. The status becomes `not_found`, the list is empty, and the journal still gets a record: the search ran and found nothing.
+2. Change the notes path to `ROOT / 'data' / 'missing.txt'`. The program stops with `FileNotFoundError` and nothing is written to the journal.
+
+In `runs.jsonl` the failed search left a trace and the missing file did not. Put the original values back.
+
+## What we have now
+
+Section 1 is done: the assistant has a "search the notes" operation that reads the source, searches, records the result and reports a status. To run the prepared checks, open `tests/test_lesson.py` and run `class LessonTests`.
+
+Next section: [send a question with its source notes](../02-note-assistant/01-messages.md) to a model. Back to [all lessons](../README.md).

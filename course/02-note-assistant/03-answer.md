@@ -1,43 +1,65 @@
 # Connect the request and the answer
 
-We can now build messages and extract an answer, but the application still needs a single operation that joins those steps. `answer_question` will accept a sending function as an argument, allowing us to check our own control flow without depending on a network service.
+> **Where we are.** One function builds the messages, another extracts the text from a response. The link between them is missing: sending the messages and receiving the response. We join everything into one function.
+> `question + notes -> messages -> [sending] -> response -> text`
 
-## Open this starter
+Messages can be sent in different ways: to a cloud service, to Ollama on your own computer or, for a check, nowhere at all, by reading a prepared response from a file. If one way were hard-coded inside the function, every change of connection would mean rewriting it and risking what already worked. So the way of sending is passed in as a parameter, `send`. Today it reads a prepared response; in the next lesson it will be a real model, and the function itself will not change.
 
-Download [this lesson starter](../../downloads/lesson-02-03-answer.zip), choose **Extract All**, and open the extracted `lesson-02-03-answer` folder with **File -> Open** in PyCharm. In **View -> Tool Windows -> Project**, find `assistant.py` -> `answer_question`. Earlier components are prepared; the current function deliberately pauses with `NotImplementedError`. Keep your previous project in its own folder.
+The split also helps when something goes wrong. If the answer is wrong, you can check separately what went into the request, whether it reached the service and whether the response was read correctly.
 
-## Follow the data
+## Open the starter
 
-`answer_question(question, notes, send)` receives a callable in `send`. It calls `build_messages`, gives the resulting list to `send`, then passes the returned response to `extract_answer`. A prepared file can stand in for the sending operation during checks; the same function can later receive `send_live`.
+Download [this lesson's starter](../../downloads/lesson-02-03-answer.zip), extract it and open the `lesson-02-03-answer` folder in PyCharm. The current task is `answer_question` in `assistant.py`.
 
-<img src="../../assets/02-note-assistant/lesson-03-answer.gif" width="480" alt="Data flow for connect the request and the answer">
+## Look at the data
 
-[Static diagram](../../assets/02-note-assistant/lesson-03-answer.png). This illustrates the data flow; it is not a recording of an unfinished starter running.
-
-## Complete the function
-
-Keep the prepared function header. Fill each `...` using the hints below, then remove the `raise NotImplementedError(...)` pause in the starter. The displayed fragment explains the function body; it is not a separate script to paste elsewhere.
+`demo.py` makes this call:
 
 ```python
-def answer_question(question: str, notes: list[str], send) -> str:
-    if not notes:
-        return 'No matching notes.'
-    messages = build_messages(question, notes)
+result = answer_question(
+    'What do the notes say about Python?',
+    ['Python lists keep item order.'],
+    send_fixture,
+)
+```
+
+The first two arguments are familiar: the question and the list of notes. The third, `send_fixture`, is a ready function from `transport.py`. It reads `data/response.json` and returns the dictionary from it. Note that `send_fixture` is written without parentheses: we pass the function itself, not the result of calling it. Inside `answer_question` it is available as `send`, and `send(messages)` will call exactly this function.
+
+<img src="../../assets/02-note-assistant/lesson-03-answer.gif" width="480" alt="Messages go to send, the response goes to extract_answer">
+
+[Static version](../../assets/02-note-assistant/lesson-03-answer.png).
+
+## Your turn
+
+`answer_question` already checks for an empty list of notes and builds the messages. Replace `raise NotImplementedError(...)` with three lines and fill in the gaps:
+
+```python
     response = ...
     answer = ...
     return answer
 ```
 
-Keep the empty-question check. If `notes` is empty, return `'No matching notes.'` before calling `send`. Otherwise build the message list, call `response = send(messages)` and return `extract_answer(response)`.
+1. `response` gets the result of `send(messages)`.
+2. `answer` gets the result of `extract_answer(response)`.
 
-Passing a function as an argument does not call it immediately. The call happens at `send(messages)` inside `answer_question`. This is why we can change the connection without rewriting the sequence.
+If there are no notes, the function returns "No matching notes." at the very start and does not call the model: there would be nothing to answer from.
 
-## Run and inspect
+## Run it
 
-Open `demo.py` directly under **Project -> lesson-02-03-answer**, right-click in its editor and choose **Run 'demo'**. Read the result in **View -> Tool Windows -> Run**. A `Complete ...` message means the exercise pause is still present.
+Open `demo.py` and choose **Run 'demo'**. The Run window shows:
 
-Run `demo.py` for the assembled example. The supplied response should produce `Python lists preserve item order.`. This checks the connection between our functions, not the quality of a model: the answer comes from a file. In the next required lesson we will replace that stand-in with a real connection.
+```text
+Python lists preserve item order.
+```
 
-After a successful demonstration, optionally open the relevant file under `tests`, right-click its test class and run it. Those checks repeat defined expectations; they do not certify every possible input or every model answer.
+Follow the path: `build_messages` assembled the rule, question and note; `send(messages)` called `send_fixture`, which returned the dictionary from the file; `extract_answer` took the string out of it, and `return` handed it back to `demo.py`, which printed it.
 
-[All lessons](../../course/README.md).
+## Try to break it
+
+Change the question in `demo.py` to `'What do the notes say about databases?'` and run again. The answer stays the same: there is no model here, and `send_fixture` always returns the same prepared response. That is fine for checking that the functions fit together, and says nothing about how a real model will answer. Put the original question back.
+
+## What we have now
+
+The path from question to answer text is assembled and checked on known data. In the next lesson we pass `send_live` instead of `send_fixture`, and a real model will answer. To run the prepared checks, open `tests/test_lesson.py` and run `class LessonTests`.
+
+Next: [connect a real model](04-connect.md). Back to [all lessons](../README.md).

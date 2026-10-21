@@ -1,22 +1,31 @@
 # Check the changed project
 
-An applied file may still contain the wrong calculation. We will run the supplied project tests and return their exit code and output, making a successful write and a verified result separate outcomes.
+> **Where we are.** The agent proposed a change, a person approved it and the program wrote the file. The last step: make sure the code actually works after the change.
+> `proposal -> diff -> approval -> write -> [tests]`
 
-## Open this starter
+All we know so far is that the change was written. That does not mean the order total is now right: the model could have proposed code with a different bug, and the person could have missed it in the diff. What has to be checked is the code's behavior: with a price of 100 and a quantity of 3, the total must be 300.
 
-Download [this lesson starter](https://github.com/polar-byter/agent-harness-workshop-en/blob/main/downloads/lesson-05-04-verify.zip), choose **Extract All**, and open the extracted `lesson-05-04-verify` folder with **File -> Open** in PyCharm. In **View -> Tool Windows -> Project**, find `workspace.py` -> `check_project`. Earlier components are prepared; the current function deliberately pauses with `NotImplementedError`. Keep your previous project in its own folder. The main run uses the connection saved in the [required connection lesson](https://github.com/polar-byter/agent-harness-workshop-en/blob/main/course/02-note-assistant/04-connect.md). The offline `demo_check.py` remains a separate code check.
+The folder `workspace/tests` holds tests for the calculation. `check_project` runs them from our program and returns a clear report. With the original addition the tests fail; after a correct fix they pass. One detail matters: the conditions of the check were set by us in advance, not by the model after its own change.
 
-## Follow the data
+## Open the starter
 
-The prepared command uses the current `sys.executable` with `-B -m unittest discover -s tests`. `subprocess.run` returns an object with `returncode`, `stdout` and `stderr`. Exit code zero indicates that this test process completed successfully.
+Download [this lesson's starter](https://github.com/polar-byter/agent-harness-workshop-en/blob/main/downloads/lesson-05-04-verify.zip), extract it and open the `lesson-05-04-verify` folder in PyCharm. The current task is `check_project` in `workspace.py`.
 
-## Complete the function
+## Look at the data
 
-Keep the prepared function header. Fill each `...` using the hints below, then remove the `raise NotImplementedError(...)` pause in the starter. The displayed fragment explains the function body; it is not a separate script to paste elsewhere.
+`workspace/tests` checks three cases: 100 x 3 = 300, 100 x 0 = 0 and 12.5 x 2 = 25. The tests run as a separate Python process, and its exit code tells the outcome: `0` means everything passed, any other number means something failed. The command is already in the starter:
 
 ```python
-def check_project(root: Path) -> dict:
-    command = [sys.executable, '-B', '-m', 'unittest', 'discover', '-s', 'tests']
+command = [sys.executable, '-B', '-m', 'unittest', 'discover', '-s', 'tests']
+```
+
+`sys.executable` is the same Python that runs `demo.py`. `-m unittest discover -s tests` finds and runs the tests in the `tests` folder. The command is a list rather than a string, so nothing can be slipped into it through the command shell.
+
+## Your turn
+
+Replace `raise NotImplementedError(...)` in `check_project` with the code below and fill in the gaps:
+
+```python
     process = subprocess.run(
         command,
         cwd=root,
@@ -33,16 +42,27 @@ def check_project(root: Path) -> dict:
     }
 ```
 
-Run the prepared argument list with `cwd=root`, `capture_output=True`, `text=True`, `encoding='utf-8'` and a bounded timeout as shown. Return `passed` as `process.returncode == 0`, the actual `returncode`, and `output` as `process.stdout + process.stderr`.
+1. `'passed'` is `process.returncode == 0`.
+2. `'output'` is `process.stdout + process.stderr`: tests write to both streams.
 
-Tests may write to either output stream. Do not report success for every completed process, and do not make the checker silently edit the code it is supposed to inspect.
+`subprocess.run` starts the process and waits for it to finish. `cwd=root` is the folder the tests run from, `capture_output=True` collects the output instead of printing it, `text=True` and `encoding` return it as strings, and `timeout=5` stops the wait after five seconds if the tests hang.
 
-## Run and inspect
+## Run it with the model
 
-Open `demo.py` directly under **Project -> lesson-05-04-verify**, right-click in its editor and choose **Run 'demo'**. Read the result in **View -> Tool Windows -> Run**. A `Complete ...` message means the exercise pause is still present.
+Open `demo.py` and choose **Run 'demo'**. Now the whole pass runs: the model proposes a fix, the program shows the diff, asks for approval, writes the change and calls your function. Type `yes` if you agree with the change, or press Enter to decline. The Run window shows the test result for the current `prices.py`.
 
-The supplied addition bug should fail. After the correct multiplication change is approved and written, the tests should pass. A real model may propose another result, so inspect the diff and test report rather than assuming success.
+**Guess before running:** what will the tests show if you decline the change?
 
-The main example now performs one pass: read, request a proposal, show a diff, ask approval, apply and check. It does not implement autonomous repair retries or process isolation. Read the [course conclusion](https://github.com/polar-byter/agent-harness-workshop-en/blob/main/course/conclusion.md) for applications beyond this exercise.
+## Check the function on its own
 
-After a successful demonstration, optionally open the relevant file under `tests`, right-click its test class and run it. Those checks repeat defined expectations; they do not certify every possible input or every model answer.
+Open `demo_check.py` and choose **Run 'demo_check'**. It runs the tests for the current `workspace/prices.py` without a model. In a freshly extracted starter that file still adds, so we expect `passed: False`, a non-zero `returncode` and, in `output`, the test's message: 300 was expected and 103 came back. If you have already applied a correct fix through `demo.py`, the result is `passed: True`. To run the prepared checks, run `class LessonTests`.
+
+## Try to break it
+
+Open `workspace/prices.py` and change the calculation by hand to `return price * quantity + 1`. Run `demo_check.py`. The tests fail, and `output` shows which value was expected and which came back. This is what a change looks like when it was written but is wrong. Then change the line to `return price * quantity` and run again: now `passed: True`. To repeat the whole pass with the model, put back the original `return price + quantity`.
+
+## What we have now
+
+`demo.py` now performs one full pass of a coding agent: read the file, get a proposal from the model, show the diff, ask for approval, apply and test. The program tells apart three states: a change proposed, a change written and a change that passed the checks. Real coding agents add repeated repair attempts and sandboxed execution, but their control points are the same.
+
+The practical part of the course is complete. What it means for the work of an analyst, a manager and an administrator is in the [conclusion](https://github.com/polar-byter/agent-harness-workshop-en/blob/main/course/conclusion.md). Back to [all lessons](https://github.com/polar-byter/agent-harness-workshop-en/blob/main/course/README.md).

@@ -9,6 +9,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import textwrap
 import unicodedata
 from urllib.parse import unquote, urlsplit
 from zipfile import ZipFile
@@ -27,7 +28,8 @@ def main():
         assert not re.search(r'\[\[[\w][^\]\n]*\]\]',text),(path,'Obsidian link remains')
         assert text.count('```')%2==0,path
         for code in re.findall(r'```python\n(.*?)```',text,re.S):
-            ast.parse(code,filename=str(path))
+            # Lesson templates show a function body with its indentation.
+            ast.parse(textwrap.dedent(code),filename=str(path))
         destinations=re.findall(r'(?<!!)\[[^\]]*\]\(([^)]+)\)',text)+re.findall(r'<img[^>]+src="([^"]+)"',text)
         for destination in destinations:
             url=urlsplit(destination)

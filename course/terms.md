@@ -1,21 +1,24 @@
 # AI terms through the note assistant
 
-These terms describe mechanisms we can point to in our own application. Use them after following the corresponding data flow rather than as substitutes for it.
+Articles about AI often name the same action in several ways. Each term below points to a place in our own code where you can see what it actually means. There is no need to learn the list in advance; come back when a term appears in a lesson or in something you are reading.
 
-| Term | Concrete meaning here |
+| Term | Where it shows up in the course |
 |---|---|
-| Model | Generates a response from the messages we supply |
-| Harness | Code that prepares input, provides tools, tracks history and controls execution |
-| Agent loop | Decide, execute a requested tool, record its result, decide again |
-| Retrieval | Select source notes before asking for an answer |
-| Grounding | Relate an answer to supplied evidence; a request to do so is not a guarantee |
-| Guardrail | A particular enforced check, such as rejecting an unknown tool name |
-| Orchestration | The caller coordinates model requests, tool execution and termination |
-| Context engineering | Choose and arrange the information included in a request |
-| Tracing | Record visible actions and results so a run can be investigated |
-| Evals | Compare behavior on defined cases against suitable criteria |
-| Human in the loop | A person makes a specific decision, such as approving a proposed file write |
+| LLM, language model | The model our program sends messages to, local Qwen or a cloud model |
+| Prompt | The answering rule in `build_messages` and the task given to the agent |
+| Context, tokens | Everything the model gets in one request: rule, question, notes |
+| Retrieval | `find_notes` selects the notes that match a query |
+| RAG | Found notes are sent to the model together with the question |
+| Grounding | Comparing the model's answer with the note we supplied |
+| Hallucination | The model states something the supplied note does not contain |
+| Tools | `read_notes` and `find_notes`, which the model may ask for |
+| Guardrails | `dispatch_tool` rejects an unknown tool; `workspace_path` rejects an outside file |
+| Agent loop, orchestration | `run_agent` decides when to call the model, when to run a tool and when to stop |
+| Context engineering | `select_context` picks the part of the history the model will see |
+| Tracing | The event log with every command and its result |
+| Evals | `evaluate_cases` compares the agent's behavior with expected outcomes |
+| Human in the loop | `apply_change` writes a change only after a person approves it |
 
-Our line search is a simple retrieval example, not a complete production RAG system with ingestion, indexing and retrieval evaluation. Our JSONL journal is not a distributed tracing platform. Our hand-written JSON command protocol is not the API's native function-calling protocol. The path check is not process isolation.
+Our versions are deliberately small, and it helps to know where they stop. Our line search is retrieval in its simplest form; production RAG systems add document ingestion, indexing and retrieval quality checks. Our JSONL event log shows what the program did; tracing platforms such as OpenTelemetry also link operations with IDs and record how long each took. Our hand-written JSON command format plays the role of native function calling. Our path check limits which files the program opens; running untrusted code safely needs a separate sandbox.
 
-Those distinctions help read product descriptions: ask which concrete mechanism a term refers to and what the implementation actually checks. See the [agent-loop lesson](03-tool-agent/02-cycle.md), [execution controls](04-run-control/01-budget.md) and [course conclusion](conclusion.md).
+When you meet one of these words in a product description, ask the same question as in the course: which concrete mechanism does it refer to, and what does it actually check? See the [agent-loop lesson](03-tool-agent/02-cycle.md), the [execution controls](04-run-control/01-budget.md) and the [conclusion](conclusion.md).

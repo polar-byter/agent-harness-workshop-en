@@ -1,22 +1,43 @@
 # Parse a command from model text
 
-A model response can contain text that resembles a tool request. Before dispatching it, the program needs an actual dictionary with fields it can inspect. We will also distinguish valid JSON from the particular JSON object our protocol expects.
+> **Where we are.** Second lesson of the optional workbook. The messages for the model are ready; now we read its reply.
+> `messages -> model -> [text -> command dictionary] -> dispatch_tool`
 
-## Open this starter
+The model replied `{"type":"tool","tool":"find_notes","query":"python"}`. We can see it is a request to search. To Python, it is still one string, and the separate values have to be extracted from it.
 
-Download [this lesson starter](../../downloads/lesson-extra-02-command.zip), choose **Extract All**, and open the extracted `lesson-extra-02-command` folder with **File -> Open** in PyCharm. In **View -> Tool Windows -> Project**, find `decisions.py` -> `parse_decision`. Earlier components are prepared; the current function deliberately pauses with `NotImplementedError`. Keep your previous project in its own folder.
+The model could also reply "I will search now", or send a JSON list instead of an object. The program must not take such a reply for a command and carry on with missing data. So `parse_decision` parses the text, checks that it got a dictionary, and either returns it or reports an error. This is where the model's reply ends and our code's responsibility begins.
 
-## Follow the data
+## Open the starter
 
-`text = '{"type":"tool","tool":"find_notes","query":"python"}'` is a Python string. `json.loads(text)` produces a dictionary. Now `command['tool']` accesses the value `'find_notes'`. A JSON array such as `'[]'` parses successfully too, but is not an acceptable command object.
+Download [this lesson's starter](../../downloads/lesson-extra-02-command.zip), extract it and open the `lesson-extra-02-command` folder in PyCharm. In `decisions.py`, `parse_decision` is paused at a placeholder; `build_decision_messages` from the previous lesson is ready. No model is needed.
 
-<img src="../../assets/extra-prepared-modules/command-flow.gif" width="480" alt="Data flow for parse a command from model text">
+## Look at the data
 
-[Static diagram](../../assets/extra-prepared-modules/command-flow.png). This illustrates the data flow; it is not a recording of an unfinished starter running.
+`demo_check.py` uses this reply:
 
-## Complete the function
+```python
+text = '{"type":"tool","tool":"find_notes","query":"python"}'
+```
 
-Keep the prepared function header. Fill each `...` using the hints below, then remove the `raise NotImplementedError(...)` pause in the starter. The displayed fragment explains the function body; it is not a separate script to paste elsewhere.
+We see the words `tool` and `query` in the string, but a string has no fields with those names. To get at them, parse the text with `json.loads`:
+
+```python
+command = json.loads(text)
+command['tool']    # 'find_notes'
+command['query']   # 'python'
+```
+
+Now `command` is a dictionary. `json.loads` neither chooses nor invents anything; it only reads what is written in the text. An easy way to remember the pair: `dumps` turns data into text, `loads` turns text into data.
+
+If the model replied with plain words, `json.loads` raises `JSONDecodeError`. The string `'[]'` is valid JSON, but it parses into a list, and a command needs a dictionary. We handle both cases.
+
+<img src="../../assets/extra-prepared-modules/command-flow.gif" width="480" alt="JSON text becomes a command dictionary">
+
+[Static version](../../assets/extra-prepared-modules/command-flow.png).
+
+## Your turn
+
+Replace the placeholder in `parse_decision` with the code below and fill in the two gaps:
 
 ```python
 def parse_decision(text: str) -> dict:
@@ -29,16 +50,31 @@ def parse_decision(text: str) -> dict:
     return command
 ```
 
-Inside the prepared `try`, assign `command = json.loads(text)`. Keep the supplied `JSONDecodeError` handling, then use `isinstance(command, dict)` for the object check and return `command`.
+1. `command` gets `json.loads(text)`.
+2. The type for `isinstance` is `dict`.
 
-Returning the original text instead would leave the caller with a string. It could not read fields by name using dictionary indexing. Parsing the command does not authorize its tool name; `dispatch_tool` still owns that separate check.
+`try` holds the action that may fail. On `JSONDecodeError`, Python jumps to `except`, where we replace the technical message with a clear one; `text[:400]` keeps only the first 400 characters of the reply. `isinstance(command, dict)` is `True` for a dictionary and `False` for a list.
 
-## Run and inspect
+The function returns the dictionary to its caller. In the demonstration that is `decision = parse_decision(text)`, after which `decision['tool']` gives `'find_notes'`. Nothing is searched yet: `dispatch_tool` runs the command in the main project.
 
-Open `demo_check.py` directly under **Project -> lesson-extra-02-command**, right-click in its editor and choose **Run 'demo_check'**. Read the result in **View -> Tool Windows -> Run**. A `Complete ...` message means the exercise pause is still present.
+## Run it
 
-Run `demo_check.py`. Observe `str` before parsing and `dict` afterward, then the extracted tool and query values. The prepared invalid-text and array examples should fail. As a temporary experiment on a copy, return `text` and inspect why the caller's field access fails; restore the dictionary return afterward.
+Open `demo_check.py` and choose **Run**. First you see the change from string to dictionary:
 
-After a successful demonstration, optionally open the relevant file under `tests`, right-click its test class and run it. Those checks repeat defined expectations; they do not certify every possible input or every model answer.
+```text
+Before parsing: <class 'str'>
+After parsing: <class 'dict'>
+Command: {'type': 'tool', 'tool': 'find_notes', 'query': 'python'}
+Tool: find_notes
+Query: python
+```
 
-[All lessons](../../course/README.md).
+Then the demonstration tries "I will search now" and `'[]'`, and a different check fires for each. To run the prepared checks, run `tests/test_lesson.py`.
+
+## Try to break it
+
+Change `return command` to `return text` in your function and run `demo_check.py` again. The parsing still happens, but the function returns the original string, and reading the `'tool'` field in the demonstration fails. Calling `json.loads` is not enough; the result has to be passed on. Put `return command` back.
+
+The check has a limit. The dictionary `{'type': 'tool', 'tool': 'delete_file'}` passes both checks in `parse_decision`: it is valid JSON and it is a dictionary. Such an action is rejected by `dispatch_tool`, which holds the list of permitted tools. Checking the format and permitting actions are separate jobs.
+
+Next: [send an HTTP request from Python](03-request.md). Back to [the workbook](README.md).

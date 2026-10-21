@@ -1,22 +1,69 @@
 # Write a search function
 
-Suppose a colleague asks which of your notes mention Python. You can read three lines yourself, but an agent needs an operation that accepts a query and returns matching source text. We will write that operation before connecting a model. This keeps the first experiment observable: the same notes and query should produce the same list every time.
+> **Where we are.** We are building an assistant that answers from a set of notes. The first step is for the program to find the right notes itself, with no model yet.
+> `notes -> [search] -> model -> answer`
 
-The function will not print, open a file or ask a model anything. Its result is a list that a caller can inspect, save or include in a later model request.
+Recall the MTS case from the introduction: the assistant gave wrong advice because the right paragraph never reached the model. The first thing to check in such an investigation is whether the program found that paragraph at all. So we start by writing the function that finds notes by keyword and watching exactly which lines it picks.
 
-## Open this starter
+## The task
 
-Download [this lesson starter](https://github.com/polar-byter/agent-harness-workshop-en/blob/main/downloads/lesson-01-01-search.zip), choose **Extract All**, and open the extracted `lesson-01-01-search` folder with **File -> Open** in PyCharm. In **View -> Tool Windows -> Project**, find `notes.py` -> `find_notes`, `notes.py` -> `find_notes_alt`. Earlier components are prepared; the current function deliberately pauses with `NotImplementedError`. Keep your previous project in its own folder.
+We have three notes:
 
-## Follow the data
+```text
+Python lists
+Agent tools
+python functions
+```
 
-The demonstration supplies `notes = ['Python lists', 'Agent tools', 'python functions']` and `query = ' PYTHON '`. The list is the first argument, so it becomes the parameter `notes`; the string becomes `query`. The expected result is `['Python lists', 'python functions']`, preserving the spelling of the source lines.
+We want the notes that mention "python", whether it is written in capitals or not.
 
-`strip()` removes whitespace at the ends of the query. `casefold()` prepares text for case-insensitive comparison. The expression `'python' in 'python lists'` is `True`: the left string occurs inside the right string. We transform a note only for comparison and return its original text.
+**Guess before running:** how many notes should the function return, and which ones? Keep your answer in mind; we will check it at the end.
 
-## Complete the function
+## Open the starter
 
-Keep the prepared function header. Fill each `...` using the hints below, then remove the `raise NotImplementedError(...)` pause in the starter. The displayed fragment explains the function body; it is not a separate script to paste elsewhere.
+Download [this lesson's starter](https://github.com/polar-byter/agent-harness-workshop-en/blob/main/downloads/lesson-01-01-search.zip), extract it with **Extract All** and open the `lesson-01-01-search` folder in PyCharm with **File -> Open**. In the Project panel open `notes.py`. The functions `find_notes` and `find_notes_alt` are already started there; we will complete them.
+
+## Step 1. Normalize the query
+
+A person may type the query with extra spaces or in capitals: `' PYTHON '`. To compare reliably, strip the spaces and lower the case:
+
+```python
+query = ' PYTHON '
+query = query.strip().casefold()
+print(query)   # python
+```
+
+`strip()` removes spaces at both ends, and `casefold()` turns letters into lower case for comparison. Both return a new string, so we store the result back in `query`. This line is already at the start of `find_notes`.
+
+## Step 2. Check one note
+
+Take the first note and ask Python whether it contains the query:
+
+```python
+note = 'Python lists'
+'python' in note.casefold()   # True
+```
+
+The `in` operator answers whether the string on the left occurs inside the string on the right. The note itself stays unchanged: `casefold()` makes a lowered copy only for the comparison, and the original note goes into the result.
+
+## Step 3. Go through all notes
+
+Now check each note in turn and collect the matching ones in a new list, `selected`. A `for` loop takes the notes one by one and runs the indented code under it for each:
+
+```python
+selected = []
+for note in notes:
+    if query in note.casefold():
+        selected.append(note)
+```
+
+The spaces at the start of the lines matter. They tell Python that the `if` runs inside the loop and that `append` runs only when the condition is true. Use four spaces per level and keep the indentation as shown. `append` adds a note to the end of `selected`.
+
+The animation shows `selected` growing as the loop goes:
+
+## Your turn
+
+In `notes.py`, `find_notes` already prepares the query and creates the empty list `selected`. Replace the line `raise NotImplementedError(...)` with the loop and fill in the two gaps:
 
 ```python
 def find_notes(notes: list[str], query: str) -> list[str]:
@@ -30,18 +77,40 @@ def find_notes(notes: list[str], query: str) -> list[str]:
     return selected
 ```
 
-Use `query in note.casefold()` as the condition and `note` as the argument to `append`. The list starts empty; after the first line it contains `['Python lists']`, after the second it is unchanged, and after the third it contains both matching lines.
+1. In the condition, use the check from step 2 with the variable `query` instead of `'python'`.
+2. In `append`, pass the original `note`, so the result keeps the note exactly as written.
 
-Python uses indentation to define blocks. Use four spaces per level: the condition belongs inside the loop and `append` inside the condition. Put `return selected` at the same indentation as `for`, so it runs after all notes have been checked. A return inside the loop would stop the search early.
+`return selected` sits after the loop, at the same level as `for`, and hands the collected list back to whoever called the function. If you indent it into the loop, the function will stop after the first note.
 
-Now implement `find_notes_alt` with the same query preparation and empty-query check, followed by `return [note for note in notes if query in note.casefold()]`. This list comprehension performs the same selection in one expression. Compare the two implementations on identical inputs; the shorter spelling should not change their behavior.
+Then open `find_notes_alt` in the same file. It does the same selection in one line using a list comprehension. After the prepared query lines, replace its `raise NotImplementedError(...)` with:
 
-## Run and inspect
+```python
+    return [note for note in notes if query in note.casefold()]
+```
 
-Open `demo_search.py` directly under **Project -> lesson-01-01-search**, right-click in its editor and choose **Run 'demo_search'**. Read the result in **View -> Tool Windows -> Run**. A `Complete ...` message means the exercise pause is still present.
+Read it as "a list of each `note` from `notes` for which the query is in the lowered note". It is the same loop and condition as above, written as one expression.
 
-Open `demo_search.py` and run it. Both functions should return `['Python lists', 'python functions']`. Printing belongs to the demonstration: `print(matches)` displays the list and adds a newline by default. Multiple arguments are separated by a space; for example, `print('Matches:', matches)` adds a readable label without changing the result.
+## Run it
 
-Try a query with no match, then a query containing spaces only. The first should return `[]`; the second should raise `ValueError`. An empty request and an unsuccessful search are different cases.
+Open `demo_search.py`, right-click in the editor and choose **Run 'demo_search'**. In the Run window both functions should print:
 
-After a successful demonstration, optionally open the relevant file under `tests`, right-click its test class and run it. Those checks repeat defined expectations; they do not certify every possible input or every model answer.
+```text
+['Python lists', 'python functions']
+```
+
+Did that match your guess? "Agent tools" was skipped, and "Python lists" with a capital letter was found thanks to `casefold()`. If you see `Complete ...` instead, the file is not saved or the `raise NotImplementedError(...)` line is still in place.
+
+## Try to break it
+
+1. Remove `.casefold()` from the condition and run again. Which note disappears, and why?
+2. In `demo_search.py`, change the query to three spaces `'   '`. The function stops with "Enter a nonempty query". That check is there on purpose: an empty string is contained in every string, so without it the search would return everything. While a person types the query, that seems unlikely; once a model or another part of the program calls the search, an empty value can arrive by mistake, and it is better to see it at once.
+
+Put the code back the way it was before moving on.
+
+## What we have now
+
+We can check the first link in the MTS chain: did the program find the right note? If a note is in the source but not in this list, the problem is in the search, not in the model. In section 3 the model will ask for this same search, and your function will choose the lines.
+
+This kind of selection is called **retrieval** in articles about AI. Ours is the simplest form: substring search. How retrieval relates to RAG is in the [list of terms](https://github.com/polar-byter/agent-harness-workshop-en/blob/main/course/terms.md).
+
+To check the search on more cases (duplicates, no matches, unusual letters), see [let tests repeat the checks](https://github.com/polar-byter/agent-harness-workshop-en/blob/main/course/01-note-search/extra-tests.md). Next: [read notes from a file](https://github.com/polar-byter/agent-harness-workshop-en/blob/main/course/01-note-search/02-read.md). Back to [all lessons](https://github.com/polar-byter/agent-harness-workshop-en/blob/main/course/README.md).

@@ -1,27 +1,47 @@
 # Preview a proposed change
 
-The exercise file adds price and quantity even though total price requires multiplication. We can ask a model to propose a correction, but we should see the proposed difference before writing it. `preview_change` builds that inspectable proposal.
+> **Where we are.** The agent can reach only the files in its working folder. Now it proposes a fix for `prices.py`, and before anything is written, the program shows a person exactly what would change.
+> `model's proposal -> [diff for a person] -> approval -> write -> check`
 
-## Open this starter
+In `prices.py` the order total adds price and quantity instead of multiplying them. The model will propose a fix. Even for a change this small, it is worth seeing it before it is written: a model may also rename the function, delete a check or "improve" something nobody asked about.
 
-Download [this lesson starter](../../downloads/lesson-05-02-diff.zip), choose **Extract All**, and open the extracted `lesson-05-02-diff` folder with **File -> Open** in PyCharm. In **View -> Tool Windows -> Project**, find `workspace.py` -> `preview_change`. Earlier components are prepared; the current function deliberately pauses with `NotImplementedError`. Keep your previous project in its own folder. The main run uses the connection saved in the [required connection lesson](../../course/02-note-assistant/04-connect.md). The offline `demo_check.py` remains a separate code check.
+`preview_change` prepares the proposal: it compares the old and new text, collects the changed lines and remembers a fingerprint of the original file. The file itself stays as it is. A person sees the concrete change and can accept or reject it, and in the next lesson the fingerprint confirms that the approval applies to the version of the file that person actually saw.
 
-## Follow the data
+## Open the starter
 
-The old line is `return price + quantity`; the proposed line is `return price * quantity`. A unified diff marks removed lines with `-` and added lines with `+`. The proposal also stores the original file hash and the complete proposed text.
+Download [this lesson's starter](../../downloads/lesson-05-02-diff.zip), extract it and open the `lesson-05-02-diff` folder in PyCharm. The current task is `preview_change` in `workspace.py`.
 
-<img src="../../assets/05-coding-harness/lesson-02-diff.gif" width="480" alt="Data flow for preview a proposed change">
+## Look at the data
 
-[Static diagram](../../assets/05-coding-harness/lesson-02-diff.png). This illustrates the data flow; it is not a recording of an unfinished starter running.
-
-## Complete the function
-
-Keep the prepared function header. Fill each `...` using the hints below, then remove the `raise NotImplementedError(...)` pause in the starter. The displayed fragment explains the function body; it is not a separate script to paste elsewhere.
+The old and new calculation lines:
 
 ```python
-def preview_change(root: Path, relative: str, new_text: str) -> dict:
-    path = workspace_path(root, relative)
-    old_text = path.read_text(encoding='utf-8')
+old_text = '    return price + quantity\n'
+new_text = '    return price * quantity\n'
+```
+
+Programmers show such changes as a diff: a removed line starts with `-`, an added one with `+`. Every code review on GitHub or GitLab looks like this. For our change the diff is:
+
+```text
+--- before/prices.py
++++ after/prices.py
+@@ -1,2 +1,2 @@
+ def total_price(price, quantity):
+-    return price + quantity
++    return price * quantity
+```
+
+Together with the diff we keep a hash of the original file: a check value computed from its contents. Change a single character in the file and the hash is different.
+
+<img src="../../assets/05-coding-harness/lesson-02-diff.gif" width="480" alt="The proposed change is shown as a diff before writing">
+
+[Static version](../../assets/05-coding-harness/lesson-02-diff.png).
+
+## Your turn
+
+In `preview_change` the path is already checked with `workspace_path` and the old text is read. Replace `raise NotImplementedError(...)` with the code below and fill in the gaps:
+
+```python
     lines = difflib.unified_diff(
         old_text.splitlines(keepends=True),
         new_text.splitlines(keepends=True),
@@ -37,16 +57,23 @@ def preview_change(root: Path, relative: str, new_text: str) -> dict:
     }
 ```
 
-Get the checked path using `workspace_path` and read its UTF-8 text. Use `difflib.unified_diff` on old and new `splitlines(keepends=True)` lists, then join its output. Compute `hashlib.sha256(path.read_bytes()).hexdigest()` for `before_hash`.
+1. `'new_text'` gets the parameter `new_text`.
+2. `'diff'` gets `''.join(lines)`: the library produces the diff line by line, and we want one text. The separator is empty because `keepends=True` already kept the line breaks.
 
-Return `path`, `before_hash`, `new_text` and `diff`. Do not write `new_text` here. A hash is a comparison value for the next lesson, not an encryption of the source or proof that the proposed change is correct.
+The comparison itself comes from the standard library `difflib`; there is no need to invent it. `fromfile` and `tofile` are only labels in the diff and create no files. `hashlib.sha256(...).hexdigest()` computes the hash from the bytes of the original file.
 
-## Run and inspect
+The function returns a prepared proposal: text to show a person in `diff`, the future code in `new_text` and `before_hash` for the check before writing. Nothing is written to disk.
 
-Open `demo.py` directly under **Project -> lesson-05-02-diff**, right-click in its editor and choose **Run 'demo'**. Read the result in **View -> Tool Windows -> Run**. A `Complete ...` message means the exercise pause is still present.
+## Run it with the model
 
-Run the live example to inspect what the model proposes, or `demo_check.py` for the prepared multiplication change. Open `workspace/prices.py` afterward: previewing should leave its old text intact. The exact model proposal is not predetermined, so a missing or incorrect change must be reviewed as an outcome.
+Open `demo.py` and choose **Run 'demo'**. The model receives the exercise `prices.py` and proposes a fix, and your function shows the difference in the Run window. We expect multiplication instead of addition. Read the actual diff carefully: the model may propose extra changes or not fix the bug at all.
 
-After a successful demonstration, optionally open the relevant file under `tests`, right-click its test class and run it. Those checks repeat defined expectations; they do not certify every possible input or every model answer.
+## Check the function on its own
 
-[All lessons](../../course/README.md).
+Open `demo_check.py` and choose **Run 'demo_check'**. We expect the diff above, with a `-` line for addition and a `+` line for multiplication. Open `workspace/prices.py` afterwards: it still has the old line. To run the prepared checks, run `class LessonTests`.
+
+## What we have now
+
+The agent's proposal is separate from the change to the project: a person sees the exact edit before it reaches the file. For a manager this is one of the main control points: the agent proposes, a person decides.
+
+Next: [apply an approved proposal](03-apply.md). Back to [all lessons](../README.md).

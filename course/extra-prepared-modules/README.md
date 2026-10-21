@@ -1,14 +1,26 @@
 # Optional workbook: implement the prepared modules
 
-In the main agent project, a person asks for Python notes. `decide_live` sends the task and previous tool results to a model; the model returns JSON describing a tool request or an answer. `dispatch_tool` and the loop then handle execution. This workbook opens up the connection and parsing code that the main path supplied ready-made.
+> **Where we are.** In section 3 the model asks the program to run a search, and the program decides whether that is allowed. Part of that exchange came ready-made: the modules `decisions.py` and `transport.py`. This optional workbook is for writing them yourself.
 
-| Lesson | What you implement |
+Recall the task: a user asks about Python, and the assistant must find the right notes. The model returns a request - "run a search with the query python" - but the program reads the file and searches it. For that exchange to work, the program first tells the model which actions are available and how to ask for them, and afterwards parses the text of the model's reply. On the next request it also passes on the results of actions already taken, otherwise the model never learns what was found.
+
+In the main starters, `decide_live` in `decisions.py` and the module `transport.py`, which talks to Ollama or a cloud service, do this for you. Here we write their parts one at a time and then assemble a working `decide_live`.
+
+| Who does what | |
 |---|---|
-| [Build decision messages](01-messages.md) | Task and history become explicit message content |
-| [Parse a command](02-command.md) | JSON text becomes a checked dictionary |
-| [Send an HTTP request](03-request.md) | A dictionary becomes request bytes and a parsed response |
-| [Assemble decide_live](04-decision.md) | The pieces form one model-decision call |
+| Receives the task, the rules and earlier results | The model |
+| Returns the text of a command with a tool name and a query | The model |
+| Parses the command, checks it is allowed and runs the search | The program |
+| Passes the results with the task in the next request | The program |
+| Answers from the found notes | The model |
 
-Each lesson has an independent starter with its own current function paused. The first two work without a service. The later two include an offline check before an actual request through the saved connection. You can inspect the whole skeleton without assuming that every helper must be rewritten for the main course.
+| Lesson | What you write |
+|---|---|
+| [Build the decision messages](01-messages.md) | `build_decision_messages` in `decisions.py` |
+| [Parse a command from model text](02-command.md) | `parse_decision` in `decisions.py` |
+| [Send an HTTP request from Python](03-request.md) | `request_json` in `transport.py` |
+| [Assemble decide_live](04-decision.md) | `decide_live` in `decisions.py` |
 
-Keep the boundaries visible: building messages is not sending them; parsing JSON is not executing a tool; a complete service response is not proof of a correct answer. Return to [the main tool project](../03-tool-agent/01-tools.md) when you want to follow the full loop again.
+Each lesson has its own starter with earlier parts ready. The first two need no model: we look at the data before sending and after receiving. The last two start with an offline check and then make a real request through the saved connection.
+
+Start after [connecting a model](../02-note-assistant/04-connect.md), or come back here when `decide_live` first appears in [the tool lesson](../03-tool-agent/01-tools.md). If you only want to read the ready code, see [how send_live works](../02-note-assistant/extra-send-live.md). Back to [all lessons](../README.md).

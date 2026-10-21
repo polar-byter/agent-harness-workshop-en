@@ -1,26 +1,35 @@
 # Extract text from a service response
 
-A model service returns a structured response, not just a sentence. We need to select the answer text while ignoring unrelated elements. Keeping this conversion in a function allows the rest of the application to work with a string rather than a provider response.
+> **Where we are.** We can build the request for the model. Before sending it, we deal with the other end: what the response looks like and how to get the text for the user out of it.
+> `messages -> model -> [service response -> text]`
 
-## Open this starter
+A model service does not return a single sentence. It returns a dictionary with service fields: the state of the response, a list of its parts, the type of each part. Print it as is, and the user sees a data structure. Grab the first field that looks right, and you may miss part of the text or treat a cut-off answer as complete. So we write `extract_answer`, which checks that the response is complete, collects the text parts and returns a plain string.
 
-Download [this lesson starter](https://github.com/polar-byter/agent-harness-workshop-en/blob/main/downloads/lesson-02-02-response.zip), choose **Extract All**, and open the extracted `lesson-02-02-response` folder with **File -> Open** in PyCharm. In **View -> Tool Windows -> Project**, find `assistant.py` -> `extract_answer`. Earlier components are prepared; the current function deliberately pauses with `NotImplementedError`. Keep your previous project in its own folder.
+We work with the prepared file `data/response.json`, which follows the format of a real response. We know what is inside, so we can check our function before connecting a model.
 
-## Follow the data
+## Open the starter
 
-The course response has `status='completed'` and an `output` list. A message item has a `content` list, whose text part has `type='output_text'` and a `text` value. The supplied fixture contains `Python lists preserve item order.`.
+Download [this lesson's starter](https://github.com/polar-byter/agent-harness-workshop-en/blob/main/downloads/lesson-02-02-response.zip), extract it and open the `lesson-02-02-response` folder in PyCharm. The current task is `extract_answer` in `assistant.py`.
 
-This is the normalized course format. `transport.py` converts each supported provider response into it; the services do not all return this exact structure.
+## Look at the data
 
-## Complete the function
+Open **data -> response.json**. `status` with the value `"completed"` says the response is finished. `output` holds the list of items; text messages are marked `"type": "message"` and each has its own `content` list. The text itself sits in parts of type `"output_text"`, in the `text` field. In our file that text is "Python lists preserve item order."
 
-Keep the prepared function header. Fill each `...` using the hints below, then remove the `raise NotImplementedError(...)` pause in the starter. The displayed fragment explains the function body; it is not a separate script to paste elsewhere.
+This is the course's own normalized format, modelled on the [Responses API](https://developers.openai.com/api/docs/guides/text). Later, `transport.py` converts each service's real response into it, since services do not all return the same structure.
+
+To read a field that may be missing, use `get`:
 
 ```python
-def extract_answer(response: dict) -> str:
-    if response.get('status') != 'completed':
-        raise ValueError('Model response is incomplete')
-    parts = []
+part = {'type': 'output_text', 'text': 'Python lists preserve item order.'}
+part['text']             # 'Python lists preserve item order.'
+part.get('missing', '')  # '' - the fallback when the key is absent
+```
+
+## Your turn
+
+The status check and the empty list `parts` are already in `extract_answer`. Replace `raise NotImplementedError(...)` with the code below and fill in the gaps:
+
+```python
     for item in response.get('output', []):
         if item.get('type') == 'message':
             for part in item.get('content', []):
@@ -32,14 +41,27 @@ def extract_answer(response: dict) -> str:
     return ...
 ```
 
-Keep the prepared status check. Loop over `response.get('output', [])`, select items with `type == 'message'`, then loop over their `content`. Select `type == 'output_text'` and append each text value to `parts`. Join the collected strings with `'\n'` and trim the result.
+1. Append the part's text: `part['text']`.
+2. Return the finished string `answer`.
 
-Reject an empty final string. An incomplete response or a structure without answer text should not silently become a successful empty answer. `return` passes the string to the caller; it does not print it.
+There are two loops, one inside the other. The outer one goes through the items of `output` and picks messages; the inner one goes through a message's parts and picks text. `'\n'.join(parts)` joins the pieces with line breaks, and `strip()` trims the ends. If no text was found at all, the function raises an error instead of returning an empty string that could pass for an answer.
 
-## Run and inspect
+## Run it
 
-Open `demo.py` directly under **Project -> lesson-02-02-response**, right-click in its editor and choose **Run 'demo'**. Read the result in **View -> Tool Windows -> Run**. A `Complete ...` message means the exercise pause is still present.
+Open `demo.py` and choose **Run 'demo'**. The Run window shows:
 
-Run `demo.py`. The result should be the sentence from the fixture, without the surrounding response dictionary. For a small experiment, inspect the fixture and distinguish service fields from source text; do not change it just to make a failing function appear successful.
+```text
+Python lists preserve item order.
+```
 
-After a successful demonstration, optionally open the relevant file under `tests`, right-click its test class and run it. Those checks repeat defined expectations; they do not certify every possible input or every model answer.
+The demonstration read the dictionary from `response.json`, passed it to your function and printed what came back. No model is involved: we extracted text that was already in the file.
+
+## Try to break it
+
+Open `data/response.json` and change `"completed"` to `"incomplete"`. Run `demo.py`: the function stops with "Model response is incomplete". Services set such a status, for example, when an answer was cut off at the length limit. Showing a user half a sentence is worse than reporting an error. Change it back to `"completed"`.
+
+## What we have now
+
+The program separates the answer text from the service's structure and does not pass a cut-off answer off as complete. To run the prepared checks, open `tests/test_lesson.py` and run `class LessonTests`.
+
+Next: [connect the request and the answer](https://github.com/polar-byter/agent-harness-workshop-en/blob/main/course/02-note-assistant/03-answer.md). Back to [all lessons](https://github.com/polar-byter/agent-harness-workshop-en/blob/main/course/README.md).

@@ -1,40 +1,57 @@
 # Send an HTTP request from Python
 
-The model connection is not a special channel hidden inside the interpreter. Our program encodes a JSON request, sends its bytes to a service and parses the returned bytes. We will implement that small network section while keeping error handling visible.
+> **Where we are.** Third lesson of the optional workbook. We can build the messages and parse the reply. In between is the request to the model service itself.
+> `messages -> [HTTP request -> response] -> text -> command`
 
-## Open this starter
+Our program talks to Ollama and to cloud services over HTTP. With Ollama the exchange stays inside your computer; with a cloud service it goes over the internet. The ready `send_live` in `transport.py` chooses the address, assembles a dictionary with the model name and messages, and hands the sending to `request_json`. We write the network part of that function.
 
-Download [this lesson starter](https://github.com/polar-byter/agent-harness-workshop-en/blob/main/downloads/lesson-extra-03-request.zip), choose **Extract All**, and open the extracted `lesson-extra-03-request` folder with **File -> Open** in PyCharm. In **View -> Tool Windows -> Project**, find `transport.py` -> `request_json`. Earlier components are prepared; the current function deliberately pauses with `NotImplementedError`. Keep your previous project in its own folder.
+This helps tell two kinds of trouble apart: the request never reached the service, or a response came back but not in the shape the program expects. We check the code on known data without a network first, then through the saved connection.
 
-## Follow the data
+## Open the starter
 
-`url` identifies the endpoint, `payload` is a dictionary and `api_key` is optional. JSON serialization produces a string; UTF-8 encoding produces the bytes used as the POST body. The response follows the reverse path: bytes, decoded text, parsed JSON.
+Download [this lesson's starter](https://github.com/polar-byter/agent-harness-workshop-en/blob/main/downloads/lesson-extra-03-request.zip), extract it and open the `lesson-extra-03-request` folder in PyCharm. In `transport.py`, `request_json` is paused. The headers and the error handlers are already in the function; we fill in the part between them. A real request needs the connection from [lesson 2.4](https://github.com/polar-byter/agent-harness-workshop-en/blob/main/course/02-note-assistant/04-connect.md).
 
-## Complete the function
+## Look at the data
 
-Keep the prepared function header. Fill each `...` using the hints below, then remove the `raise NotImplementedError(...)` pause in the starter. The displayed fragment explains the function body; it is not a separate script to paste elsewhere.
+To check the exchange without a model, `demo_check.py` uses a placeholder address and an empty list of messages:
 
 ```python
-def request_json(url: str, payload: dict, api_key: str = '') -> dict:
-    headers = {'Content-Type': 'application/json'}
-    if api_key:
-        headers['Authorization'] = 'Bearer ' + api_key
-    request = Request(url, data=..., headers=headers, method='POST')
-    try:
-        with urlopen(request, timeout=180) as response:
-            return json.loads(...)
-    except HTTPError:
-        raise
+url = 'https://example.invalid/chat'
+payload = {'model': 'exercise-model', 'messages': [], 'stream': False}
 ```
 
-For the first blank, use `json.dumps(payload, ensure_ascii=False).encode('utf-8')`. For the second, use `response.read().decode('utf-8')`. `Request` describes the operation; `urlopen` performs it, and `with` closes the response.
+`model` names the model, `messages` holds the messages and `stream=False` asks for the whole response at once. The real connection is replaced in `demo_check.py` by a test function that accepts the request and returns the bytes `b'{"ok": true}'`; our function must turn them into the dictionary `{'ok': True}`.
 
-The compact template shows the data path. In the actual file, replace the unfinished network section and keep its existing `HTTPError`, `URLError` and timeout handling rather than replacing those branches with this abbreviated example. Do not print the authorization header or save a key in the lesson source.
+`url` is the address, `payload` the request data and the optional `api_key` is for cloud services. The headers are ready: `'Content-Type': 'application/json'` states the format, and a non-empty key adds `Authorization`. We never print the key or the whole request.
 
-## Run and inspect
+## Your turn
 
-Open `demo_check.py` directly under **Project -> lesson-extra-03-request**, right-click in its editor and choose **Run 'demo_check'**. Read the result in **View -> Tool Windows -> Run**. A `Complete ...` message means the exercise pause is still present.
+The code goes in two places. First, replace the `raise NotImplementedError(...)` line with:
 
-Run `demo_check.py` first: it substitutes an offline response and inspects the serialized request. After it passes, use `demo.py` with the saved real connection. A JSON object returned by this function is still a provider response, not yet the final answer string.
+```python
+request = Request(url, data=..., headers=headers, method='POST')
+```
 
-After a successful demonstration, optionally open the relevant file under `tests`, right-click its test class and run it. Those checks repeat defined expectations; they do not certify every possible input or every model answer.
+Then replace `pass` inside the existing `try` block, one indentation level deeper than `try`, with:
+
+```python
+with urlopen(request, timeout=180) as response:
+    return json.loads(...)
+```
+
+1. `data=` gets `json.dumps(payload, ensure_ascii=False).encode('utf-8')`: the dictionary becomes a JSON string, and `encode` turns it into bytes to send.
+2. `json.loads` gets `response.read().decode('utf-8')`: `read()` takes the bytes of the response and `decode` turns them into text, which `json.loads` parses back into a dictionary.
+
+`Request` only describes the request; `urlopen` sends it, and `with` closes the connection afterwards. `timeout=180` is how many seconds a single network operation may take. Leave the `except` branches as they are: they turn an HTTP error or a lost connection into a clear message, for example HTTP 401 into a hint to check the API key.
+
+## Run it
+
+Open `demo_check.py` and choose **Run**. The Run window shows `POST`, the address `https://example.invalid/chat`, the request data and the result `{'ok': True}`. To run the prepared checks, run `tests/test_lesson.py`.
+
+Then run `demo.py`. It makes a real request through the saved connection: it asks "What do the notes say about Python?" and passes the note "Python lists keep item order." Here the model simply answers from the note, with no tools: that is enough to check the network function. We expect an answer about lists keeping their order; the exact words depend on the model. A cloud service counts this request against your quota.
+
+## How different services end up in one format
+
+Look at the ready `send_live` in the same `transport.py`. It calls your `request_json`, but the dictionary it gets back differs by service: Ollama keeps the text in `response['message']['content']`, cloud services in the first item of `choices`. Having checked that the response is complete, `send_live` passes the text to `course_response`, which wraps it in the course format with `status` and `output`. `extract_answer` reads that format whichever service was used. For the full walk through every branch, see [how send_live works](https://github.com/polar-byter/agent-harness-workshop-en/blob/main/course/02-note-assistant/extra-send-live.md). Python's documentation covers [urllib.request](https://docs.python.org/3.14/library/urllib.request.html) and [json](https://docs.python.org/3.14/library/json.html).
+
+Next: [assemble decide_live](https://github.com/polar-byter/agent-harness-workshop-en/blob/main/course/extra-prepared-modules/04-decision.md) from building messages, sending and parsing. Back to [the workbook](https://github.com/polar-byter/agent-harness-workshop-en/blob/main/course/extra-prepared-modules/README.md).

@@ -1,18 +1,42 @@
 # Build the decision messages
 
-Return to our note assistant after a pause: a person asks it to find Python notes, the model selects a tool, and the application executes that tool. The main course already provided `decide_live`. Here we rebuild the messages it needs so the path from task to model input is explicit.
+> **Where we are.** First lesson of the optional workbook. We write the function that assembles the messages for the model before it chooses its next action.
+> `task + history -> [messages] -> model -> command`
 
-## Open this starter
+A user asks about Python. The model has to decide what to do: search the notes, read them all or answer right away. The user's words alone are not enough for that. The program has to tell the model which actions exist, how to ask for them and what has already been done. If the result of the last search is not in the messages, the model does not know about it. If the tool names are not explained, the model may ask for something the program does not have.
 
-Download [this lesson starter](https://github.com/polar-byter/agent-harness-workshop-en/blob/main/downloads/lesson-extra-01-messages.zip), choose **Extract All**, and open the extracted `lesson-extra-01-messages` folder with **File -> Open** in PyCharm. In **View -> Tool Windows -> Project**, find `decisions.py` -> `build_decision_messages`. Earlier components are prepared; the current function deliberately pauses with `NotImplementedError`. Keep your previous project in its own folder.
+`build_decision_messages` assembles these messages. You will see exactly what the model is about to receive: the rules, the task and the history. When an agent behaves oddly, this content is the first thing to check.
 
-## Follow the data
+## Open the starter
 
-The function receives `task='Find notes about Python'` and an `events` list. The supplied `RULES` string describes the permitted JSON decisions. We serialize the task and history into the user message; the rules occupy a separate developer message.
+Download [this lesson's starter](https://github.com/polar-byter/agent-harness-workshop-en/blob/main/downloads/lesson-extra-01-messages.zip), extract it and open the `lesson-extra-01-messages` folder in PyCharm. In `decisions.py`, `build_decision_messages` is paused at a placeholder. No model is needed in this lesson.
 
-## Complete the function
+## Look at the data
 
-Keep the prepared function header. Fill each `...` using the hints below, then remove the `raise NotImplementedError(...)` pause in the starter. The displayed fragment explains the function body; it is not a separate script to paste elsewhere.
+Start with the first request, before any search:
+
+```python
+task = 'Find notes about Python'
+events = []
+```
+
+`task` is the request, `events` the history of actions taken, still empty. The function returns two messages: the rules with role `'developer'` and the task with its data with role `'user'`. The rules are already in the `RULES` variable at the top of `decisions.py`, including an example of how to ask for a search:
+
+```json
+{"type":"tool","tool":"find_notes","query":"word"}
+```
+
+`type: "tool"` means a request for an action, `tool` names the search function and `query` holds the search text. This is how the program tells the model what form of command it expects; whether the model follows it shows only in its reply.
+
+The task and history are turned into a JSON string before sending:
+
+```python
+content = json.dumps({'task': task, 'events': events}, ensure_ascii=False)
+```
+
+## Your turn
+
+Replace the placeholder in `build_decision_messages` with the code below and fill in the three gaps:
 
 ```python
 def build_decision_messages(task: str, events: list[dict]) -> list[dict]:
@@ -24,14 +48,22 @@ def build_decision_messages(task: str, events: list[dict]) -> list[dict]:
     ]
 ```
 
-Build `{'task': task, 'events': events}`, serialize it using `json.dumps(..., ensure_ascii=False)`, and return a message list with the prepared rules followed by the serialized data. Keep the original event values; do not replace them with a summary.
+1. `content` gets the `json.dumps` call shown above.
+2. The `'developer'` message gets `rules`.
+3. The `'user'` message gets `content`.
 
-The JSON text is the content of a message. It is not the tool command the model will later return. This function only prepares data and can be tested without any model or network service.
+The function returns the list of two messages. Sending them comes in the last lesson, through `send_live`, where the `'developer'` role becomes `'system'` as in the main course.
 
-## Run and inspect
+## Run it
 
-Open `demo_check.py` directly under **Project -> lesson-extra-01-messages**, right-click in its editor and choose **Run 'demo_check'**. Read the result in **View -> Tool Windows -> Run**. A `Complete ...` message means the exercise pause is still present.
+Open `demo_check.py` and choose **Run**. The Run window shows the rules and the task with an empty `events` list. To run the prepared checks, open `tests/test_lesson.py` and choose **Run**.
 
-Run `demo_check.py`, which prints the two messages. Repeat with one prepared event and verify that its result appears in the serialized user content. The lesson's small event example illustrates message construction; the main loop stores each real event as a command-result pair.
+`demo_check.py` also makes a second call: the program has run a search and is asking the model again. The task is the same, and the history now has an entry saying which tool ran and what it returned:
 
-After a successful demonstration, optionally open the relevant file under `tests`, right-click its test class and run it. Those checks repeat defined expectations; they do not certify every possible input or every model answer.
+```python
+events = [{'tool': 'find_notes', 'result': ['Python lists keep item order.']}]
+```
+
+The program writes that entry after the search; the model does not create it. Compare the two `'user'` messages in the output: in the second, the model would receive the found note together with the task, while the rules stay the same.
+
+Next: [parse a command from model text](https://github.com/polar-byter/agent-harness-workshop-en/blob/main/course/extra-prepared-modules/02-command.md). Back to [the workbook](https://github.com/polar-byter/agent-harness-workshop-en/blob/main/course/extra-prepared-modules/README.md).

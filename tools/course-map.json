@@ -1,0 +1,556 @@
+{
+  "groups": [
+    {
+      "source": "01-note-search",
+      "path": "01-note-search"
+    },
+    {
+      "source": "02-note-assistant",
+      "path": "02-note-assistant"
+    },
+    {
+      "source": "03-tool-agent",
+      "path": "03-tool-agent"
+    },
+    {
+      "source": "04-run-control",
+      "path": "04-run-control"
+    },
+    {
+      "source": "05-coding-harness",
+      "path": "05-coding-harness"
+    },
+    {
+      "source": "extra-prepared-modules",
+      "path": "extra-prepared-modules"
+    }
+  ],
+  "documents": [
+    {
+      "source": "course/who-this-is-for.md",
+      "path": "course/who-this-is-for.md"
+    },
+    {
+      "source": "course/00-introduction.md",
+      "path": "course/00-introduction.md"
+    },
+    {
+      "source": "course/README.md",
+      "path": "course/README.md"
+    },
+    {
+      "source": "course/pycharm.md",
+      "path": "course/pycharm.md"
+    },
+    {
+      "source": "course/01-note-search/00-setup.md",
+      "path": "course/01-note-search/00-setup.md"
+    },
+    {
+      "source": "course/01-note-search/extra-tests.md",
+      "path": "course/01-note-search/extra-tests.md"
+    },
+    {
+      "source": "course/01-note-search/01-search.md",
+      "path": "course/01-note-search/01-search.md"
+    },
+    {
+      "source": "course/01-note-search/02-read.md",
+      "path": "course/01-note-search/02-read.md"
+    },
+    {
+      "source": "course/01-note-search/03-journal.md",
+      "path": "course/01-note-search/03-journal.md"
+    },
+    {
+      "source": "course/01-note-search/04-run.md",
+      "path": "course/01-note-search/04-run.md"
+    },
+    {
+      "source": "course/02-note-assistant/01-messages.md",
+      "path": "course/02-note-assistant/01-messages.md"
+    },
+    {
+      "source": "course/02-note-assistant/02-response.md",
+      "path": "course/02-note-assistant/02-response.md"
+    },
+    {
+      "source": "course/02-note-assistant/03-answer.md",
+      "path": "course/02-note-assistant/03-answer.md"
+    },
+    {
+      "source": "course/02-note-assistant/04-connect.md",
+      "path": "course/02-note-assistant/04-connect.md"
+    },
+    {
+      "source": "course/03-tool-agent/01-tools.md",
+      "path": "course/03-tool-agent/01-tools.md"
+    },
+    {
+      "source": "course/03-tool-agent/02-cycle.md",
+      "path": "course/03-tool-agent/02-cycle.md"
+    },
+    {
+      "source": "course/04-run-control/01-budget.md",
+      "path": "course/04-run-control/01-budget.md"
+    },
+    {
+      "source": "course/04-run-control/02-context.md",
+      "path": "course/04-run-control/02-context.md"
+    },
+    {
+      "source": "course/04-run-control/03-trace.md",
+      "path": "course/04-run-control/03-trace.md"
+    },
+    {
+      "source": "course/04-run-control/04-evaluation.md",
+      "path": "course/04-run-control/04-evaluation.md"
+    },
+    {
+      "source": "course/05-coding-harness/01-paths.md",
+      "path": "course/05-coding-harness/01-paths.md"
+    },
+    {
+      "source": "course/05-coding-harness/02-diff.md",
+      "path": "course/05-coding-harness/02-diff.md"
+    },
+    {
+      "source": "course/05-coding-harness/03-apply.md",
+      "path": "course/05-coding-harness/03-apply.md"
+    },
+    {
+      "source": "course/05-coding-harness/04-verify.md",
+      "path": "course/05-coding-harness/04-verify.md"
+    },
+    {
+      "source": "course/02-note-assistant/extra-send-live.md",
+      "path": "course/02-note-assistant/extra-send-live.md"
+    },
+    {
+      "source": "course/02-note-assistant/extra-usage.md",
+      "path": "course/02-note-assistant/extra-usage.md"
+    },
+    {
+      "source": "course/02-note-assistant/setup-connections.md",
+      "path": "course/02-note-assistant/setup-connections.md"
+    },
+    {
+      "source": "course/02-note-assistant/extra-local.md",
+      "path": "course/02-note-assistant/extra-local.md"
+    },
+    {
+      "source": "course/extra-prepared-modules/01-messages.md",
+      "path": "course/extra-prepared-modules/01-messages.md"
+    },
+    {
+      "source": "course/extra-prepared-modules/02-command.md",
+      "path": "course/extra-prepared-modules/02-command.md"
+    },
+    {
+      "source": "course/extra-prepared-modules/03-request.md",
+      "path": "course/extra-prepared-modules/03-request.md"
+    },
+    {
+      "source": "course/extra-prepared-modules/04-decision.md",
+      "path": "course/extra-prepared-modules/04-decision.md"
+    },
+    {
+      "source": "course/extra-prepared-modules/README.md",
+      "path": "course/extra-prepared-modules/README.md"
+    },
+    {
+      "source": "course/terms.md",
+      "path": "course/terms.md"
+    },
+    {
+      "source": "course/conclusion.md",
+      "path": "course/conclusion.md"
+    },
+    {
+      "source": "course/02-note-assistant/usage-background.md",
+      "path": "course/02-note-assistant/usage-background.md"
+    },
+    {
+      "source": "course/02-note-assistant/local-setup.md",
+      "path": "course/02-note-assistant/local-setup.md"
+    }
+  ],
+  "lessons": [
+    {
+      "group": 1,
+      "number": 1,
+      "root": "lesson-01-01-search",
+      "source": "course/01-note-search/01-search.md",
+      "path": "course/01-note-search/01-search.md",
+      "title": "Write a search function",
+      "targets": [
+        [
+          "notes.py",
+          "find_notes"
+        ],
+        [
+          "notes.py",
+          "find_notes_alt"
+        ]
+      ],
+      "archive_source": "downloads/lesson-01-01-search.zip"
+    },
+    {
+      "group": 1,
+      "number": 2,
+      "root": "lesson-01-02-read",
+      "source": "course/01-note-search/02-read.md",
+      "path": "course/01-note-search/02-read.md",
+      "title": "Read notes from a file",
+      "targets": [
+        [
+          "notes.py",
+          "read_notes"
+        ]
+      ],
+      "archive_source": "downloads/lesson-01-02-read.zip"
+    },
+    {
+      "group": 1,
+      "number": 3,
+      "root": "lesson-01-03-journal",
+      "source": "course/01-note-search/03-journal.md",
+      "path": "course/01-note-search/03-journal.md",
+      "title": "Save a search result",
+      "targets": [
+        [
+          "journal.py",
+          "write_result"
+        ]
+      ],
+      "archive_source": "downloads/lesson-01-03-journal.zip"
+    },
+    {
+      "group": 1,
+      "number": 4,
+      "root": "lesson-01-04-run",
+      "source": "course/01-note-search/04-run.md",
+      "path": "course/01-note-search/04-run.md",
+      "title": "Connect reading, search and the journal",
+      "targets": [
+        [
+          "app.py",
+          "run_search"
+        ]
+      ],
+      "archive_source": "downloads/lesson-01-04-run.zip"
+    },
+    {
+      "group": 2,
+      "number": 1,
+      "root": "lesson-02-01-messages",
+      "source": "course/02-note-assistant/01-messages.md",
+      "path": "course/02-note-assistant/01-messages.md",
+      "title": "Send a question with its source notes",
+      "targets": [
+        [
+          "assistant.py",
+          "build_messages"
+        ]
+      ],
+      "archive_source": "downloads/lesson-02-01-messages.zip"
+    },
+    {
+      "group": 2,
+      "number": 2,
+      "root": "lesson-02-02-response",
+      "source": "course/02-note-assistant/02-response.md",
+      "path": "course/02-note-assistant/02-response.md",
+      "title": "Extract text from a service response",
+      "targets": [
+        [
+          "assistant.py",
+          "extract_answer"
+        ]
+      ],
+      "archive_source": "downloads/lesson-02-02-response.zip"
+    },
+    {
+      "group": 2,
+      "number": 3,
+      "root": "lesson-02-03-answer",
+      "source": "course/02-note-assistant/03-answer.md",
+      "path": "course/02-note-assistant/03-answer.md",
+      "title": "Connect the request and the answer",
+      "targets": [
+        [
+          "assistant.py",
+          "answer_question"
+        ]
+      ],
+      "archive_source": "downloads/lesson-02-03-answer.zip"
+    },
+    {
+      "source": "course/02-note-assistant/04-connect.md",
+      "path": "course/02-note-assistant/04-connect.md",
+      "group": 2,
+      "number": 4,
+      "root": "lesson-02-04-connect",
+      "title": "Connect a real model",
+      "targets": [],
+      "archive_source": "downloads/lesson-02-04-connect.zip",
+      "ready": true
+    },
+    {
+      "group": 3,
+      "number": 1,
+      "root": "lesson-03-01-tools",
+      "source": "course/03-tool-agent/01-tools.md",
+      "path": "course/03-tool-agent/01-tools.md",
+      "title": "Execute a permitted tool request",
+      "targets": [
+        [
+          "agent.py",
+          "dispatch_tool"
+        ]
+      ],
+      "archive_source": "downloads/lesson-03-01-tools.zip"
+    },
+    {
+      "group": 3,
+      "number": 2,
+      "root": "lesson-03-02-cycle",
+      "source": "course/03-tool-agent/02-cycle.md",
+      "path": "course/03-tool-agent/02-cycle.md",
+      "title": "Return tool results to the model",
+      "targets": [
+        [
+          "agent.py",
+          "run_agent"
+        ]
+      ],
+      "archive_source": "downloads/lesson-03-02-cycle.zip"
+    },
+    {
+      "group": 4,
+      "number": 1,
+      "root": "lesson-04-01-budget",
+      "source": "course/04-run-control/01-budget.md",
+      "path": "course/04-run-control/01-budget.md",
+      "title": "Limit the number of actions",
+      "targets": [
+        [
+          "control.py",
+          "check_budget"
+        ]
+      ],
+      "archive_source": "downloads/lesson-04-01-budget.zip"
+    },
+    {
+      "group": 4,
+      "number": 2,
+      "root": "lesson-04-02-context",
+      "source": "course/04-run-control/02-context.md",
+      "path": "course/04-run-control/02-context.md",
+      "title": "Choose history for the next request",
+      "targets": [
+        [
+          "control.py",
+          "select_context"
+        ]
+      ],
+      "archive_source": "downloads/lesson-04-02-context.zip"
+    },
+    {
+      "group": 4,
+      "number": 3,
+      "root": "lesson-04-03-trace",
+      "source": "course/04-run-control/03-trace.md",
+      "path": "course/04-run-control/03-trace.md",
+      "title": "Save the execution history",
+      "targets": [
+        [
+          "control.py",
+          "save_events"
+        ]
+      ],
+      "archive_source": "downloads/lesson-04-03-trace.zip"
+    },
+    {
+      "group": 4,
+      "number": 4,
+      "root": "lesson-04-04-evaluation",
+      "source": "course/04-run-control/04-evaluation.md",
+      "path": "course/04-run-control/04-evaluation.md",
+      "title": "Compare behavior across scenarios",
+      "targets": [
+        [
+          "control.py",
+          "evaluate_cases"
+        ]
+      ],
+      "archive_source": "downloads/lesson-04-04-evaluation.zip"
+    },
+    {
+      "group": 5,
+      "number": 1,
+      "root": "lesson-05-01-paths",
+      "source": "course/05-coding-harness/01-paths.md",
+      "path": "course/05-coding-harness/01-paths.md",
+      "title": "Restrict the working folder",
+      "targets": [
+        [
+          "workspace.py",
+          "workspace_path"
+        ]
+      ],
+      "archive_source": "downloads/lesson-05-01-paths.zip"
+    },
+    {
+      "group": 5,
+      "number": 2,
+      "root": "lesson-05-02-diff",
+      "source": "course/05-coding-harness/02-diff.md",
+      "path": "course/05-coding-harness/02-diff.md",
+      "title": "Preview a proposed change",
+      "targets": [
+        [
+          "workspace.py",
+          "preview_change"
+        ]
+      ],
+      "archive_source": "downloads/lesson-05-02-diff.zip"
+    },
+    {
+      "group": 5,
+      "number": 3,
+      "root": "lesson-05-03-apply",
+      "source": "course/05-coding-harness/03-apply.md",
+      "path": "course/05-coding-harness/03-apply.md",
+      "title": "Apply an approved proposal",
+      "targets": [
+        [
+          "workspace.py",
+          "apply_change"
+        ]
+      ],
+      "archive_source": "downloads/lesson-05-03-apply.zip"
+    },
+    {
+      "group": 5,
+      "number": 4,
+      "root": "lesson-05-04-verify",
+      "source": "course/05-coding-harness/04-verify.md",
+      "path": "course/05-coding-harness/04-verify.md",
+      "title": "Check the changed project",
+      "targets": [
+        [
+          "workspace.py",
+          "check_project"
+        ]
+      ],
+      "archive_source": "downloads/lesson-05-04-verify.zip"
+    },
+    {
+      "source": "course/02-note-assistant/extra-usage.md",
+      "path": "course/02-note-assistant/extra-usage.md",
+      "group": 2,
+      "number": 5,
+      "root": "lesson-02-extra-usage",
+      "title": "Inspect request statistics",
+      "targets": [
+        [
+          "model_stats.py",
+          "format_usage"
+        ]
+      ],
+      "archive_source": "downloads/lesson-02-extra-usage.zip",
+      "ready": false,
+      "optional": true
+    },
+    {
+      "source": "course/02-note-assistant/extra-local.md",
+      "path": "course/02-note-assistant/extra-local.md",
+      "group": 2,
+      "number": 6,
+      "root": "lesson-02-extra-local",
+      "title": "Run a model inside Python",
+      "targets": [
+        [
+          "local_model.py",
+          "send_local"
+        ]
+      ],
+      "archive_source": "downloads/lesson-02-extra-local.zip",
+      "optional": true
+    },
+    {
+      "source": "course/extra-prepared-modules/01-messages.md",
+      "path": "course/extra-prepared-modules/01-messages.md",
+      "group": 6,
+      "number": 1,
+      "root": "lesson-extra-01-messages",
+      "title": "Build the decision messages",
+      "targets": [
+        [
+          "decisions.py",
+          "build_decision_messages"
+        ]
+      ],
+      "archive_source": "downloads/lesson-extra-01-messages.zip",
+      "optional": true,
+      "runtime_modules": []
+    },
+    {
+      "source": "course/extra-prepared-modules/02-command.md",
+      "path": "course/extra-prepared-modules/02-command.md",
+      "group": 6,
+      "number": 2,
+      "root": "lesson-extra-02-command",
+      "title": "Parse a command from model text",
+      "targets": [
+        [
+          "decisions.py",
+          "parse_decision"
+        ]
+      ],
+      "archive_source": "downloads/lesson-extra-02-command.zip",
+      "optional": true,
+      "runtime_modules": []
+    },
+    {
+      "source": "course/extra-prepared-modules/03-request.md",
+      "path": "course/extra-prepared-modules/03-request.md",
+      "group": 6,
+      "number": 3,
+      "root": "lesson-extra-03-request",
+      "title": "Send an HTTP request from Python",
+      "targets": [
+        [
+          "transport.py",
+          "request_json"
+        ]
+      ],
+      "archive_source": "downloads/lesson-extra-03-request.zip",
+      "optional": true,
+      "runtime_modules": [
+        "configure_model.py"
+      ]
+    },
+    {
+      "source": "course/extra-prepared-modules/04-decision.md",
+      "path": "course/extra-prepared-modules/04-decision.md",
+      "group": 6,
+      "number": 4,
+      "root": "lesson-extra-04-decision",
+      "title": "Assemble decide_live",
+      "targets": [
+        [
+          "decisions.py",
+          "decide_live"
+        ]
+      ],
+      "archive_source": "downloads/lesson-extra-04-decision.zip",
+      "optional": true,
+      "runtime_modules": [
+        "transport.py",
+        "configure_model.py"
+      ]
+    }
+  ]
+}

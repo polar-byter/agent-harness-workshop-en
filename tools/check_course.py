@@ -1,0 +1,91 @@
+"""Check repository navigation and starter behavior without network requests."""
+import ast
+import hashlib
+import json
+import os
+from pathlib import Path
+import re
+import shutil
+import subprocess
+import sys
+import tempfile
+import unicodedata
+from urllib.parse import unquote, urlsplit
+from zipfile import ZipFile
+
+ROOT=Path(__file__).resolve().parents[1]
+
+
+def main():
+    config=json.loads((ROOT/'tools'/'course-map.json').read_text(encoding='utf-8'))
+    files=[path for path in ROOT.rglob('*.md') if not any(part in ('.checks','.git','.venv') for part in path.relative_to(ROOT).parts)]
+    links=0
+    for path in files:
+        text=path.read_text(encoding='utf-8')
+        special_punctuation=sorted({char for char in text if ord(char)>127 and unicodedata.category(char)[0] in 'PSZ'})
+        assert not special_punctuation,(path,'Use plain keyboard punctuation',special_punctuation)
+        assert not re.search(r'\[\[[\w][^\]\n]*\]\]',text),(path,'Obsidian link remains')
+        assert text.count('```')%2==0,path
+        for code in re.findall(r'```python\n(.*?)```',text,re.S):
+            ast.parse(code,filename=str(path))
+        destinations=re.findall(r'(?<!!)\[[^\]]*\]\(([^)]+)\)',text)+re.findall(r'<img[^>]+src="([^"]+)"',text)
+        for destination in destinations:
+            url=urlsplit(destination)
+            if url.scheme or url.netloc or not url.path:
+                continue
+            target=(path.parent/unquote(url.path)).resolve()
+            assert target.is_relative_to(ROOT), (path,destination)
+            assert target.exists(),(path,destination)
+            links+=1
+        for width in re.findall(r'<img[^>]+width="(\d+)"',text):
+            assert int(width)<=600,(path,width)
+    scratch=ROOT/'.checks'
+    scratch.mkdir(exist_ok=True)
+    assert scratch.resolve().is_relative_to(ROOT)
+    python_files=0
+    for lesson in config['lessons']:
+        exercise=ROOT/'exercises'/lesson['root']
+        assert (exercise/'TASK.md').is_file()
+        for path in exercise.rglob('*.py'):
+            ast.parse(path.read_text(encoding='utf-8'),filename=str(path));python_files+=1
+        archive=ROOT/'downloads'/(lesson['root']+'.zip')
+        with ZipFile(archive) as package:
+            assert package.testzip() is None,archive
+            for name in package.namelist():
+                relative=Path(*Path(name).parts[1:])
+                if name.endswith('/') or not relative.parts:
+                    continue
+                if relative.as_posix()!='README.md':
+                    archived=package.read(name)
+                    unpacked=(exercise/relative).read_bytes()
+                    if relative.suffix in ('.py','.md','.json','.txt','.toml') or relative.name=='.gitignore':
+                        archived=archived.replace(b'\r\n',b'\n')
+                        unpacked=unpacked.replace(b'\r\n',b'\n')
+                    assert archived==unpacked,(archive,relative)
+        # The scratch root and every temporary checkout are verified before managed cleanup.
+        with tempfile.TemporaryDirectory(prefix=lesson['root']+'-',dir=scratch) as folder:
+            copy=Path(folder).resolve()
+            assert copy.is_relative_to(scratch.resolve())
+            shutil.copytree(exercise,copy,dirs_exist_ok=True)
+            demo = 'demo_check' if (copy/'demo_check.py').is_file() else 'demo'
+            result=subprocess.run([sys.executable,'-B','-c',f'import {demo}; {demo}.main()'],cwd=copy,
+                env=dict(os.environ,PYTHONIOENCODING='utf-8',PYTHONDONTWRITEBYTECODE='1'),
+                capture_output=True,text=True,encoding='utf-8',timeout=15)
+            assert result.returncode==0,(lesson['root'],result.stdout,result.stderr)
+            expected = 'Python lists preserve item order.' if lesson.get('ready') else 'Complete'
+            assert expected in result.stdout,(lesson['root'],result.stdout)
+        if lesson['group'] >= 3 or lesson.get('ready'):
+            runtime=ROOT/'tools/model_runtime'
+            # Optional lessons may ask the learner to implement the network module.
+            for filename in lesson.get('runtime_modules', ('transport.py','configure_model.py')):
+                assert (exercise/filename).read_bytes()==(runtime/filename).read_bytes(),(lesson['root'],filename)
+            demo_source=(exercise/'demo.py').read_text(encoding='utf-8')
+            assert not any(name in demo_source for name in ('send_fixture','decide_fixture','propose_fixture')),lesson['root']
+        print(lesson['root']+': starter and archive OK')
+    print(f'Checked {len(config["documents"])} course pages, {links} local links, {python_files} Python files and {len(config["lessons"])} starters.')
+    print('These checks validate course packaging; unfinished learner functions are expected. No model API calls were made.')
+    subprocess.run([sys.executable,'-B',str(ROOT/'tools/test_model_runtime.py')],check=True)
+
+
+if __name__=='__main__':
+    main()

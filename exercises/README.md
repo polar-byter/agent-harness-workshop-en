@@ -1,0 +1,26 @@
+# Exercise projects
+
+- [Write a search function](lesson-01-01-search/README.md): [lesson](../course/01-note-search/01-search.md).
+- [Read notes from a file](lesson-01-02-read/README.md): [lesson](../course/01-note-search/02-read.md).
+- [Save a search result](lesson-01-03-journal/README.md): [lesson](../course/01-note-search/03-journal.md).
+- [Connect reading, search and the journal](lesson-01-04-run/README.md): [lesson](../course/01-note-search/04-run.md).
+- [Send a question with its source notes](lesson-02-01-messages/README.md): [lesson](../course/02-note-assistant/01-messages.md).
+- [Extract text from a service response](lesson-02-02-response/README.md): [lesson](../course/02-note-assistant/02-response.md).
+- [Connect the request and the answer](lesson-02-03-answer/README.md): [lesson](../course/02-note-assistant/03-answer.md).
+- [Connect a real model](lesson-02-04-connect/README.md): [lesson](../course/02-note-assistant/04-connect.md).
+- [Execute a permitted tool request](lesson-03-01-tools/README.md): [lesson](../course/03-tool-agent/01-tools.md).
+- [Return tool results to the model](lesson-03-02-cycle/README.md): [lesson](../course/03-tool-agent/02-cycle.md).
+- [Limit the number of actions](lesson-04-01-budget/README.md): [lesson](../course/04-run-control/01-budget.md).
+- [Choose history for the next request](lesson-04-02-context/README.md): [lesson](../course/04-run-control/02-context.md).
+- [Save the execution history](lesson-04-03-trace/README.md): [lesson](../course/04-run-control/03-trace.md).
+- [Compare behavior across scenarios](lesson-04-04-evaluation/README.md): [lesson](../course/04-run-control/04-evaluation.md).
+- [Restrict the working folder](lesson-05-01-paths/README.md): [lesson](../course/05-coding-harness/01-paths.md).
+- [Preview a proposed change](lesson-05-02-diff/README.md): [lesson](../course/05-coding-harness/02-diff.md).
+- [Apply an approved proposal](lesson-05-03-apply/README.md): [lesson](../course/05-coding-harness/03-apply.md).
+- [Check the changed project](lesson-05-04-verify/README.md): [lesson](../course/05-coding-harness/04-verify.md).
+- [Inspect request statistics](lesson-02-extra-usage/README.md): [lesson](../course/02-note-assistant/extra-usage.md).
+- [Run a model inside Python](lesson-02-extra-local/README.md): [lesson](../course/02-note-assistant/extra-local.md).
+- [Build the decision messages](lesson-extra-01-messages/README.md): [lesson](../course/extra-prepared-modules/01-messages.md).
+- [Parse a command from model text](lesson-extra-02-command/README.md): [lesson](../course/extra-prepared-modules/02-command.md).
+- [Send an HTTP request from Python](lesson-extra-03-request/README.md): [lesson](../course/extra-prepared-modules/03-request.md).
+- [Assemble decide_live](lesson-extra-04-decision/README.md): [lesson](../course/extra-prepared-modules/04-decision.md).

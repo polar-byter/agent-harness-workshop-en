@@ -1,0 +1,6 @@
+Python functions return values.
+Python lists keep item order.
+Agents can call tools.
+A harness controls tool execution.
+A function receives arguments and returns a result.
+A journal keeps the results of each run.

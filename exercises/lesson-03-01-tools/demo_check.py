@@ -12,7 +12,7 @@ ROOT = Path(__file__).resolve().parent
 def main():
     print('Exercise run without a network model call.')
     try:
-        result = dispatch_tool({'type':'tool','tool':'find_notes','query':'python'}, ROOT / 'data' / 'notes.txt')
+        result = dispatch_tool({'type':'tool','tool':'find_notes','query':'return'}, ROOT / 'data' / 'notes.txt')
     except NotImplementedError as error:
         print(error)
     else:

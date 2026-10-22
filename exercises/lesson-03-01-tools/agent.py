@@ -14,5 +14,5 @@ def run_agent(task: str, notes_path: Path, decide, max_steps: int = 4) -> dict:
 
 def decide_fixture(task: str, events: list[dict]) -> dict:
     if not events:
-        return {'type': 'tool', 'tool': 'find_notes', 'query': 'python'}
-    return {'type': 'answer', 'text': 'Found two notes about Python.'}
+        return {'type': 'tool', 'tool': 'find_notes', 'query': 'return'}
+    return {'type': 'answer', 'text': 'Found three clauses about returns.'}

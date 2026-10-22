@@ -1,6 +1,6 @@
 # Agent Harness Workshop
 
-A course on how AI agents work and how to check their work. Step by step you write in Python a small assistant that answers from a set of notes: a search tool, a connection to a real model, tool requests the program checks before running, an agent loop with limits and a log, and finally a coding agent whose change is applied only with your approval and then tested.
+A course on how AI agents work and how to check their work. Step by step you write in Python a small assistant that answers customers from an online store's returns policy: a search tool, a connection to a real model, tool requests the program checks before running, an agent loop with limits and a log, and finally a coding agent whose change is applied only with your approval and then tested.
 
 The course is for analysts, process owners and managers, system administrators, support and QA specialists, and programmers new to Python. Each lesson works on concrete data, gives you a started function and a hint for every gap.
 
@@ -19,3 +19,7 @@ The main route uses Python 3.12 or newer, PyCharm and the standard library. The 
 English instructions, prompts, data, diagrams and starter archives are maintained here. The Russian edition remains separate. Provider choices and free offerings may change; follow the linked official instructions when connecting a service.
 
 The repository checks cover links, packaging and the starters' unfinished state without calling a model. Your own solution is checked by the tests inside each exercise.
+
+## Next stage
+
+[Stage 2: the model inside your application](https://github.com/polar-byter/agent-harness-advanced-1-en) continues this course. The model is loaded straight into a Python program and runs on a laptop CPU without a network, and you build real applications with it: an Excel utility, routing of support requests to queues, a photo check, a web service, voice message transcription and a Telegram bot.

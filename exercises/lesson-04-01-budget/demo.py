@@ -11,7 +11,7 @@ def main():
     limits = {'steps': 4, 'tool_calls': 3}
     events = []
     while check_budget(state, limits):
-        command = decide_live('Find notes about Python', events)
+        command = decide_live('Find the return clauses in the policy', events)
         state['steps'] += 1
         print('Command:', command)
         if command.get('type') == 'answer':

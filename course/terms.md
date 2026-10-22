@@ -1,4 +1,4 @@
-# AI terms through the note assistant
+# AI terms through the returns assistant
 
 Articles about AI often name the same action in several ways. Each term below points to a place in our own code where you can see what it actually means. There is no need to learn the list in advance; come back when a term appears in a lesson or in something you are reading.
 
@@ -6,11 +6,11 @@ Articles about AI often name the same action in several ways. Each term below po
 |---|---|
 | LLM, language model | The model our program sends messages to, local Qwen or a cloud model |
 | Prompt | The answering rule in `build_messages` and the task given to the agent |
-| Context, tokens | Everything the model gets in one request: rule, question, notes |
-| Retrieval | `find_notes` selects the notes that match a query |
-| RAG | Found notes are sent to the model together with the question |
-| Grounding | Comparing the model's answer with the note we supplied |
-| Hallucination | The model states something the supplied note does not contain |
+| Context, tokens | Everything the model gets in one request: rule, question, policy clauses |
+| Retrieval | `find_notes` selects the policy clauses that match a query |
+| RAG | Found clauses are sent to the model together with the question |
+| Grounding | Comparing the model's answer with the clause we supplied |
+| Hallucination | The model names a delivery price that the supplied clause does not contain |
 | Tools | `read_notes` and `find_notes`, which the model may ask for |
 | Guardrails | `dispatch_tool` rejects an unknown tool; `workspace_path` rejects an outside file |
 | Agent loop, orchestration | `run_agent` decides when to call the model, when to run a tool and when to stop |

@@ -6,7 +6,7 @@ ROOT = Path(__file__).resolve().parent
 
 
 def main():
-    task = 'Find notes about Python. First request find_notes with query python.'
+    task = 'Find the return clauses in the policy. First request the find_notes tool with query return.'
     command = decide_live(task, [])
     print('Model command:', command)
     if command.get('type') != 'tool':

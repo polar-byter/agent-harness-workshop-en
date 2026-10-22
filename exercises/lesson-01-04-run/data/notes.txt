@@ -1,6 +1,7 @@
-Python functions return values.
-Python lists keep item order.
-Agents can call tools.
-A harness controls tool execution.
-A function receives arguments and returns a result.
-A journal keeps the results of each run.
+Returns are accepted within 14 days.
+  Delivery within the city takes 1 day.
+
+RETURNED money goes back to the original card.
+A receipt or order number is required for a return.
+Exchanges are arranged at the pickup point.
+Complaints are reviewed within 10 business days.

@@ -1,9 +1,9 @@
 # Connect reading, search and the journal
 
-> **Where we are.** The assistant has three separate functions: reading notes, searching and writing the journal. We combine them into one operation that an agent can call later.
+> **Where we are.** The assistant has three separate functions: reading the policy, searching and writing to the journal. We combine them into one operation that an agent will be able to call later.
 > `[file -> reading -> search -> journal]` -> result
 
-Right now, finding notes means calling three functions in the right order. In section 3 the agent will need a single "search" command, after which the program does the rest. We also add a status to the result: `found` when there are matches and `not_found` when there are none, so the outcome is visible without reading the list.
+To find the return clauses now, you have to call three functions in turn and keep them in the right order. In section 3 the agent will need a single "search" command, after which the program does the rest by itself. While we are at it, we add a status to the result: `found` if clauses were found and `not_found` if not. The status shows the outcome at a glance, without studying the list.
 
 ## Open the starter
 
@@ -11,24 +11,23 @@ Download [this lesson's starter](https://github.com/polar-byter/agent-harness-wo
 
 ## Look at the data
 
-`demo.py` passes three values: the path to `data/notes.txt`, the query `' Python '` and the path to the journal `runs.jsonl`. The function returns a dictionary with the query, the status and the found notes. The status takes one line:
+`demo.py` already holds the path to the policy `data/notes.txt`, the query `' return '` and the path to the journal `runs.jsonl`. `run_search` receives these three values and returns a dictionary with the query, the status and the found clauses.
+
+The status takes one line:
 
 ```python
 status = 'found' if matches else 'not_found'
 ```
 
-A non-empty `matches` list gives `'found'`, an empty one gives `'not_found'`.
+If `matches` is not empty, the result is `'found'`; for an empty list `[]` it is `'not_found'`.
 
-**Guess before running:** which of the six notes in `data/notes.txt` will the query "Python" find?
+**Guess before running:** how many of the six clauses will the query "return" find? Hint: read the fourth and fifth clauses carefully.
 
 ## Your turn
 
-In `run_search`, the notes are already read and the matches found. Replace `raise NotImplementedError(...)` with the code below and fill in the gaps:
+In `run_search`, the policy is already read and searched: the result is in `matches`. Replace `raise NotImplementedError(...)` with the code below and fill in the gaps:
 
 ```python
-def run_search(notes_path: Path, query: str, journal_path: Path) -> dict:
-    notes = read_notes(notes_path)
-    matches = find_notes(notes, query)
     status = 'found' if matches else 'not_found'
     result = {
         'query': ...,
@@ -39,31 +38,31 @@ def run_search(notes_path: Path, query: str, journal_path: Path) -> dict:
     return result
 ```
 
-1. `'query'` gets the query without surrounding spaces: `query.strip()`.
-2. `'status'` and `'matches'` get the variables `status` and `matches`.
-3. `write_result` takes the journal path `journal_path` first and then `result`.
+1. In `'query'`, put the query without edge spaces: `query.strip()`.
+2. In `'status'` and `'matches'`, the variables `status` and `matches`.
+3. `write_result` takes the journal path `journal_path` first, then the dictionary `result`.
 
-The journal is written after reading and searching on purpose: if the file is missing, the function stops earlier and the journal does not get a record of a search that never happened.
+To the left of each colon is a field name in quotes, to the right its value; here the values are variables. Writing to the journal comes after reading and searching on purpose: if the file is missing, the function stops earlier, and the journal gets no record of a search that never happened.
 
 ## Run it
 
-Open `demo.py` and choose **Run 'demo'**. The Run window shows:
+Open `demo.py`, right-click in the editor and choose **Run 'demo'**. The Run window shows:
 
 ```text
-{'query': 'Python', 'status': 'found', 'matches': ['Python functions return values.', 'Python lists keep item order.']}
+{'query': 'return', 'status': 'found', 'matches': ['Returns are accepted within 14 days.', 'RETURNED money goes back to the original card.', 'A receipt or order number is required for a return.']}
 ```
 
-Compare it with the last line of `runs.jsonl`: they hold the same data.
+Three clauses: "return" is part of "Returns" and "RETURNED", and it also appears in the clause about the receipt. Our search looks for part of a string, not a whole word. For a policy that is mostly convenient, but in other tasks it can produce extra matches: the same query would also find "nonreturnable".
 
 ## Try to break it
 
-1. Change the query in `demo.py` to `'database'`. The status becomes `not_found`, the list is empty, and the journal still gets a record: the search ran and found nothing.
-2. Change the notes path to `ROOT / 'data' / 'missing.txt'`. The program stops with `FileNotFoundError` and nothing is written to the journal.
+1. Change the query in `demo.py` to `'warranty'`. The status becomes `not_found`, the list is empty, and a record is still added to the journal: the search ran and simply found nothing.
+2. Change the policy path to `ROOT / 'data' / 'missing.txt'`. The program stops with `FileNotFoundError`, and nothing is written to the journal.
 
-In `runs.jsonl` the failed search left a trace and the missing file did not. Put the original values back.
+Compare the two cases in `runs.jsonl`: the unsuccessful search left a trace, the missing file did not. Put the old values back.
 
 ## What we have now
 
-Section 1 is done: the assistant has a "search the notes" operation that reads the source, searches, records the result and reports a status. To run the prepared checks, open `tests/test_lesson.py` and run `class LessonTests`.
+The first section is done: the assistant has a "search the policy" operation that reads the source, searches, records the result and reports a status. To run the prepared checks, open `tests/test_lesson.py` and run `class LessonTests`.
 
-Next section: [send a question with its source notes](https://github.com/polar-byter/agent-harness-workshop-en/blob/main/course/02-note-assistant/01-messages.md) to a model. Back to [all lessons](https://github.com/polar-byter/agent-harness-workshop-en/blob/main/course/README.md).
+The next section passes what we found to a model: [send the question together with the policy clauses](https://github.com/polar-byter/agent-harness-workshop-en/blob/main/course/02-note-assistant/01-messages.md). Back to [all lessons](https://github.com/polar-byter/agent-harness-workshop-en/blob/main/course/README.md).

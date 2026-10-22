@@ -123,19 +123,19 @@ def draw_summary(story):
 
 
 LOOP_STEPS = [
-    ('First model request', 'task = "Find notes about Python"\nevents = []',
+    ('First model request', 'task = "Find the return clauses\n  in the policy"\nevents = []',
      'No result yet. Send the task and empty history.', [(240, 115), (240, 151)], 'task + []'),
-    ('The model requested a search', 'command = {"type": "tool",\n  "tool": "find_notes", "query": "python"}',
-     'This describes an action. The model does not open the file itself.', [(157, 181), (110, 181), (110, 266)], 'find_notes: python'),
-    ('The program permits the operation', 'dispatch_tool(command, notes_path)\nTool: "find_notes". Query: "python".',
-     'Check the name and call search on the selected source.', [(194, 296), (286, 296)], 'query: python'),
-    ('Search returned source lines', 'result = {"matches": [\n  "Python functions return values.",\n  "Python lists keep item order."]}',
-     'The program receives the result before it is sent to the model.', [(370, 327), (370, 355), (240, 355)], '2 source lines'),
+    ('The model requested a search', 'command = {"type": "tool",\n  "tool": "find_notes", "query": "return"}',
+     'This describes an action. The model does not open the file itself.', [(157, 181), (110, 181), (110, 266)], 'find_notes: return'),
+    ('The program permits the operation', 'dispatch_tool(command, notes_path)\nTool: "find_notes". Query: "return".',
+     'Check the name and call search on the selected source.', [(194, 296), (286, 296)], 'query: return'),
+    ('Search returned source lines', 'result = {"matches": [\n  "Returns are accepted...",\n  "RETURNED money...",\n  "A receipt or order number..."]}',
+     'The program receives the result before it is sent to the model.', [(370, 327), (370, 355), (240, 355)], '3 source lines'),
     ('Record the completed tool action', 'events.append({\n  "command": command, "result": result\n})\nHistory now contains one event.',
      'Keep the search command and its result together.', [(240, 355), (240, 386)], 'command + result'),
-    ('Second model request', 'decide(task, events)\nThe same task + the search command\n+ both returned source lines.',
+    ('Second model request', 'decide(task, events)\nThe same task + the search command\n+ the three returned clauses.',
      'Return to the model with the evidence obtained by the tool.', [(156, 414), (12, 414), (12, 181), (156, 181)], 'task + 1 event'),
-    ('The model returned an answer', '{"type": "answer",\n "text": "Found two notes about Python."}',
+    ('The model returned an answer', '{"type": "answer",\n "text": "Found three clauses\n  about returns."}',
      'run_agent returns completed. This example needs no further search.', [(324, 181), (468, 181), (468, 414), (324, 414)], 'final answer'),
 ]
 
@@ -174,9 +174,9 @@ def draw_cycle(index, progress):
 def cycle_summary():
     story = {'title': 'Why this is a loop', 'scenes': [
         {'action': 'Send the task to the model', 'after': 'task + events=[] -> find_notes command'},
-        {'action': 'The program executes the search', 'after': 'dispatch_tool -> find_notes -> two lines'},
+        {'action': 'The program executes the search', 'after': 'dispatch_tool -> find_notes -> three clauses'},
         {'action': 'Record the command and result', 'after': 'events.append({command, result})'},
-        {'action': 'Ask the model again', 'after': 'The same task + history with the found lines'},
+        {'action': 'Ask the model again', 'after': 'The same task + history with the found clauses'},
         {'action': 'Answer or continue the exchange', 'after': 'type="answer" ends the run; max_steps bounds the number of decisions.'},
     ]}
     picture = draw_summary(story)

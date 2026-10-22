@@ -7,7 +7,7 @@ ROOT = Path(__file__).resolve().parent
 
 
 def main():
-    result = run_controlled('Find notes about Python', ROOT / 'data' / 'notes.txt',
+    result = run_controlled('Find the return clauses in the policy', ROOT / 'data' / 'notes.txt',
                             decide_live, {'steps': 4, 'tool_calls': 3})
     print(result)
 

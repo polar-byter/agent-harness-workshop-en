@@ -3,7 +3,7 @@
 > **Where we are.** The assistant has an agent loop: the model chooses an action, the program carries it out, the result returns to the model. This section is about controlling that loop, starting with stopping it in time.
 > `model -> action -> result -> [limit check] -> model ...`
 
-Imagine the agent has already read the notes but keeps asking to read them again. Each request is permitted, so `dispatch_tool` lets it through. Meanwhile the loop keeps turning, using time and, with a cloud service, money. A manager responsible for the pilot's budget will not be pleased.
+Imagine the agent has already read the policy but keeps asking to read it again. Each request is permitted, so `dispatch_tool` lets it through. Meanwhile the loop keeps turning, using time and, with a cloud service, money. A manager responsible for the pilot's budget will not be pleased.
 
 A line in the prompt such as "stop when you have the answer" does not solve this: the decision to stop cannot be left to the model alone. So the program counts the model requests and the tool calls itself and stops as soon as either counter reaches its limit. We count actions here; the cost in tokens is a separate topic, covered in the statistics exercise.
 

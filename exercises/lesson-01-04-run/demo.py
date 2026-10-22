@@ -11,7 +11,7 @@ ROOT = Path(__file__).resolve().parent
 def main():
     print('Exercise run without a network model call.')
     try:
-        result = run_search(ROOT / 'data' / 'notes.txt', ' Python ', ROOT / 'runs.jsonl')
+        result = run_search(ROOT / 'data' / 'notes.txt', ' return ', ROOT / 'runs.jsonl')
     except NotImplementedError as error:
         print(error)
     else:

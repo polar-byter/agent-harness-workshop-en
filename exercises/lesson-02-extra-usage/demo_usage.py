@@ -3,8 +3,8 @@ from usage_client import request_sample
 
 
 def main():
-    question = 'What do the notes say about Python?'
-    notes = ['Python lists keep item order.']
+    question = 'How many days do I have to return an item?'
+    notes = ['Returns are accepted within 14 days.']
     try:
         # Check the exercise before contacting a model.
         format_usage({'input_tokens': 10, 'output_tokens': 0, 'cached_tokens': None})

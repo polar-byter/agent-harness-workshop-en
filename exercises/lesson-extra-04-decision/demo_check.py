@@ -10,9 +10,9 @@ def main():
     try:
         from decisions import decide_live
         from transport import course_response
-        text = '{"type":"tool","tool":"find_notes","query":"python"}'
+        text = '{"type":"tool","tool":"find_notes","query":"return"}'
         with patch('decisions.send_live', return_value=course_response(text)):
-            print(decide_live('Find notes about Python', []))
+            print(decide_live('Find the return clauses in the policy', []))
     except NotImplementedError as error:
         print(error)
 

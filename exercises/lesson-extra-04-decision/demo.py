@@ -6,9 +6,9 @@ from transport import read_connection
 def main():
     settings = read_connection()
     print('Model:', settings['model'])
-    print('Task: Find notes about Python')
+    print('Task: Find the return clauses in the policy')
     try:
-        command = decide_live('Find notes about Python', [])
+        command = decide_live('Find the return clauses in the policy', [])
     except (NotImplementedError, ValueError) as error:
         print(error)
     else:

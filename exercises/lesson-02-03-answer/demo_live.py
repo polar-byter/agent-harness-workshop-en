@@ -12,7 +12,7 @@ ROOT = Path(__file__).resolve().parent
 def main():
     print('Network model request using OPENAI_API_KEY and OPENAI_MODEL.')
     try:
-        result = answer_question('What do the notes say about Python?', ['Python lists keep item order.'], send_live)
+        result = answer_question('How many days do I have to return an item?', ['Returns are accepted within 14 days.'], send_live)
     except NotImplementedError as error:
         print(error)
     else:

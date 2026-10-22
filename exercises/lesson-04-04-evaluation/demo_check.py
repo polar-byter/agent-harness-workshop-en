@@ -13,7 +13,7 @@ ROOT = Path(__file__).resolve().parent
 def main():
     print('Exercise run without a network model call.')
     try:
-        cases = [{'name':'Answer','task':'Find Python','expected_status':'completed','expected_answer':'Done'},
+        cases = [{'name':'Answer','task':'Find the clauses about returns','expected_status':'completed','expected_answer':'Done'},
                  {'name':'Stop','task':'Repeat','expected_status':'budget_limit','expected_answer':''}]
         def run(task):
             if task == 'Repeat':

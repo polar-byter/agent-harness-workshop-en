@@ -14,6 +14,6 @@ Run `check_install.py` from the Project panel. It prints the interpreter path an
 
 Download the official [Qwen3-0.6B GGUF](https://huggingface.co/Qwen/Qwen3-0.6B-GGUF) file named `Qwen3-0.6B-Q8_0.gguf`. In the Project panel expand `models` and put the file there, next to its README. Model files are not included in the repository or the lesson archives.
 
-Now run `demo.py`. `local_runtime.load_model` opens exactly that file, the demonstration builds the messages and your `send_local` calls the library; the model is closed when the block ends. Compare the answer with the note: a working model can still answer wrongly or ignore the instruction.
+Now run `demo.py`. `local_runtime.load_model` opens exactly that file, the demonstration builds the messages and your `send_local` calls the library; the model is closed when the block ends. Compare the answer with the clause: a working model can still answer wrongly or ignore the instruction.
 
 If the file is missing, the error shows the path where the program expected it. If the library will not load, check the selected interpreter and its architecture before touching the exercise code. Installing packages into a different system Python just because its command happens to work will not help this project.

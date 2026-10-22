@@ -1,4 +1,4 @@
-# Write a search function
+# Find policy clauses by keyword
 
 Open this folder as a PyCharm project and read [TASK.md](TASK.md).
 

@@ -11,7 +11,7 @@ ROOT = Path(__file__).resolve().parent
 def main():
     print('Exercise run without a network model call.')
     try:
-        result = [find_notes(['Python lists', 'Agent tools', 'python functions'], ' PYTHON '), find_notes_alt(['Python lists', 'Agent tools', 'python functions'], ' PYTHON ')]
+        result = [find_notes(['Returns are accepted within 14 days.', 'Delivery within the city takes 1 day.', 'RETURNED money goes back to the original card.'], ' Return '), find_notes_alt(['Returns are accepted within 14 days.', 'Delivery within the city takes 1 day.', 'RETURNED money goes back to the original card.'], ' Return ')]
     except NotImplementedError as error:
         print(error)
     else:

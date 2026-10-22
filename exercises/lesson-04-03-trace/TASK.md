@@ -3,7 +3,7 @@
 > **Where we are.** The agent works in a limited loop, and the program chooses which part of the history the model sees. Now we save the full history to a file, so runs can be investigated after they finish.
 > `agent loop -> history -> [file]`
 
-The assistant stopped, and the final message does not say what happened before. Did it miss the right note? Repeat the search several times? Pick the wrong tool? To find out, you need the commands and their results in the order they happened. Without that, investigating a complaint comes down to guesswork. With it, you can show a colleague or a vendor a specific line: this is what the agent asked for, and this is what it got.
+The assistant stopped, and the final message does not say what happened before. Did it miss the right clause? Repeat the search several times? Pick the wrong tool? To find out, you need the commands and their results in the order they happened. Without that, investigating a complaint comes down to guesswork. With it, you can show a colleague or a vendor a specific line: this is what the agent asked for, and this is what it got.
 
 `save_events` writes the history to a file, one JSON line per event. We save the full history, even if the model saw only part of it at each step: that way you can see both what the program had and what reached the model.
 
@@ -13,11 +13,11 @@ Download [this lesson's starter](https://github.com/polar-byter/agent-harness-wo
 
 ## Look at the data
 
-The function receives the list of events from a finished run. Each event pairs a command with its result. Here the agent asked to read the notes and got one note back:
+The function receives the list of events from a finished run. Each event pairs a command with its result. Here the agent asked to read the policy and got one clause back:
 
 ```python
 event = {'command': {'tool': 'read_notes'},
-         'result': {'notes': ['Python lists']}}
+         'result': {'notes': ['Returns are accepted within 14 days.']}}
 json.dumps(event, ensure_ascii=False)
 ```
 
@@ -44,14 +44,14 @@ Open `demo.py` and choose **Run 'demo'**. After the agent finishes, the program 
 Open `demo_check.py` and choose **Run 'demo_check'**. We expect one line:
 
 ```text
-{"command": {"tool": "read_notes"}, "result": {"notes": ["Python lists"]}}
+{"command": {"tool": "read_notes"}, "result": {"notes": ["Returns are accepted within 14 days."]}}
 ```
 
 To run the prepared checks, run `class LessonTests` in `tests/test_lesson.py`.
 
 ## Try an investigation
 
-Run `demo.py` again and open the fresh history file. Use it to answer three questions: which tool did the model ask for first, with which query, and how many notes came back? If the model answered, compare its answer with the notes in the log. This is the kind of investigation the MTS case called for. Keep in mind that such a log contains your source data, so decide what belongs in it before using the approach on real documents.
+Run `demo.py` again and open the fresh history file. Use it to answer three questions: which tool did the model ask for first, with which query, and how many clauses came back? If the model answered, compare its answer with the clauses in the log. This is the kind of investigation the MTS case called for. Keep in mind that such a log contains your source data, so decide what belongs in it before using the approach on real documents.
 
 ## What we have now
 

@@ -8,8 +8,8 @@ from decisions import build_decision_messages, parse_decision
 def main():
     print('Offline exercise check.')
     try:
-        for events in ([], [{'tool': 'find_notes', 'result': ['Python lists keep item order.']}]):
-            messages = build_decision_messages('Find notes about Python', events)
+        for events in ([], [{'tool': 'find_notes', 'result': ['Returns are accepted within 14 days.']}]):
+            messages = build_decision_messages('Find the return clauses in the policy', events)
             for message in messages:
                 print(message['role'] + ': ' + message['content'])
     except NotImplementedError as error:

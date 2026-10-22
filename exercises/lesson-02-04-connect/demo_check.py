@@ -11,7 +11,7 @@ ROOT = Path(__file__).resolve().parent
 def main():
     print('Exercise run without a network model call.')
     try:
-        result = answer_question('What do the notes say about Python?', ['Python lists keep item order.'], send_fixture)
+        result = answer_question('How many days do I have to return an item?', ['Returns are accepted within 14 days.'], send_fixture)
     except NotImplementedError as error:
         print(error)
     else:

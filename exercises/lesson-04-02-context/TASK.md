@@ -3,7 +3,7 @@
 > **Where we are.** The agent loop has a step limit. Now we look at what the model receives at each step: the whole history so far, or only part of it.
 > `history -> [choose a part] -> model -> action -> history ...`
 
-After several actions the assistant has a history of tool requests and their results. If every request carries all of it, requests keep growing, and with them time and cost. If a request carries too little, the model loses information it needs, such as a note it found three steps ago, and asks for the same search again.
+After several actions the assistant has a history of tool requests and their results. If every request carries all of it, requests keep growing, and with them time and cost. If a request carries too little, the model loses information it needs, such as a clause it found three steps ago, and asks for the same search again.
 
 Let us try a simple rule: always send the original task, and from the history only the latest events. `select_context` prepares that selection without touching the full history the program keeps. When an agent repeats itself or forgets what it has already done, this is often where the cause lies: in what it was given.
 

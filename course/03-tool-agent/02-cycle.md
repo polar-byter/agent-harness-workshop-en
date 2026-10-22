@@ -1,11 +1,11 @@
 # Return tool results to the model
 
-> **Where we are.** The program carries out the model's request to search the notes, but what it found stays with the program. Today we close the loop: the search result goes back to the model so it can answer.
+> **Where we are.** The program carries out the model's request to search the policy, but what it found stays with the program. Today we close the loop: the search result goes back to the model so it can answer.
 > `task -> model -> search -> [result -> model again] -> answer`
 
-This is exactly where the right paragraph could get lost in the MTS case: the search found it and it never reached the model. The model does not remember earlier requests. Send it the task "find notes about Python" again on its own, and it does not know the search already ran, so it asks for it again.
+This is exactly where the right clause could get lost in the MTS case: the search found it and it never reached the model. The model does not remember earlier requests. Send it the task "find the return clauses in the policy" again on its own, and it does not know the search already ran, so it asks for it again.
 
-So the program keeps a history: every command from the model together with the result of carrying it out. On the next request the model gets the original task and that history. Then it can answer from the found notes or ask for one more action. Repeating this exchange is what is called the agent loop.
+So the program keeps a history: every command from the model together with the result of carrying it out. On the next request the model gets the original task and that history. Then it can answer from the found clauses or ask for one more action. Repeating this exchange is what is called the agent loop.
 
 ## Open the starter
 
@@ -36,11 +36,13 @@ Task and history -> model's decision
 One event in the history looks like this:
 
 ```python
-events.append({'command': {'tool': 'find_notes', 'query': 'python'},
-               'result': {'matches': ['Python functions return values.', 'Python lists keep item order.']}})
+events.append({'command': {'tool': 'find_notes', 'query': 'return'},
+               'result': {'matches': ['Returns are accepted within 14 days.',
+                                   'RETURNED money goes back to the original card.',
+                                   'A receipt or order number is required for a return.']}})
 ```
 
-The animation shows the task, the command and both found notes going into the next request, while the request counter grows from one to two. A real model may take another route, for example reading all the notes first.
+The animation shows the task, the command and the three found clauses going into the next request, while the request counter grows from one to two. A real model may take another route, for example reading the whole policy first.
 
 <img src="../../assets/03-tool-agent/lesson-02-cycle.gif" width="480" alt="The tool result returns to the model in the next request">
 
@@ -70,15 +72,15 @@ The animation shows the task, the command and both found notes going into the ne
 
 `range(max_steps)` sets how many times the loop may ask the model. The `return` inside the answer branch ends the whole function at once. The last `return`, after the loop, runs only when the steps ran out without an answer: the status is then `step_limit`.
 
-In the offline example, `events` is empty on the first step and `decide_fixture` asks for a search. Your code runs it and records the event. On the second step `decide` receives a non-empty history and returns an answer. In a real run, `decide_live` puts the history into the messages for the model, so the found notes really reach it. Without the recorded event, they would simply not be in the next request.
+In the offline example, `events` is empty on the first step and `decide_fixture` asks for a search. Your code runs it and records the event. On the second step `decide` receives a non-empty history and returns an answer. In a real run, `decide_live` puts the history into the messages for the model, so the found clauses really reach it. Without the recorded event, they would simply not be in the next request.
 
 ## Run it with the model
 
-Open `demo.py` and choose **Run 'demo'**. Now the whole loop runs: the model chooses an action, the program carries it out, and the result returns to the model. The Run window shows the events and the final result. We expect an answer based on the found notes; the exact words and the number of steps may vary. A `step_limit` status is a result too: the events show what the model did instead of answering.
+Open `demo.py` and choose **Run 'demo'**. Now the whole loop runs: the model chooses an action, the program carries it out, and the result returns to the model. The Run window shows the events and the final result. We expect an answer based on the found clauses; the exact words and the number of steps may vary. A `step_limit` status is a result too: the events show what the model did instead of answering.
 
 ## Check the function on its own
 
-Open `demo_check.py` and choose **Run 'demo_check'**. We expect status `completed`, the answer "Found two notes about Python." and one event: the search command and its result. To run the prepared checks, run `class LessonTests` in `tests/test_lesson.py`.
+Open `demo_check.py` and choose **Run 'demo_check'**. We expect status `completed`, the answer "Found three clauses about returns." and one event: the search command and its result. To run the prepared checks, run `class LessonTests` in `tests/test_lesson.py`.
 
 ## Try to break it
 

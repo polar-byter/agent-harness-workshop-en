@@ -13,7 +13,7 @@ ROOT = Path(__file__).resolve().parent
 def main():
     print('Exercise run without a network model call.')
     try:
-        result = select_context('Find Python', [{'step':1},{'step':2},{'step':3}], 2)
+        result = select_context('Find the clauses about returns', [{'step':1},{'step':2},{'step':3}], 2)
     except NotImplementedError as error:
         print(error)
     else:

@@ -7,8 +7,8 @@ ROOT = Path(__file__).resolve().parent
 
 
 def main():
-    question = 'What do the notes say about Python?'
-    notes = ['Python lists keep item order.']
+    question = 'How many days do I have to return an item?'
+    notes = ['Returns are accepted within 14 days.']
     print('Question:', question)
     print('Notes:', notes)
     try:

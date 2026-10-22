@@ -1,8 +1,8 @@
 # Optional: follow send_live from messages to a response
 
-> **Where we are.** In lesson 2.4 the program sent a question and a note to a model and got an answer back. Here we read the ready code that does the sending. Nothing to write, only to follow.
+> **Where we are.** In lesson 2.4 the program sent a question and a policy clause to a model and got an answer back. Here we read the ready code that does the sending. Nothing to write, only to follow.
 
-Suppose the model answered beyond its notes. Before blaming the model, it is worth checking what it actually received: did the rule and the note reach it, where did the program send the request, and what text did it read from the reply? For that you need to know the path inside `transport.py`, from the call to `send_live` back to the result. Open `transport.py` in the `lesson-02-04-connect` project and follow along.
+Suppose the model answered beyond the policy. Before blaming the model, it is worth checking what it actually received: did the rule and the clause reach it, where did the program send the request, and what text did it read from the reply? For that you need to know the path inside `transport.py`, from the call to `send_live` back to the result. Open `transport.py` in the `lesson-02-04-connect` project and follow along.
 
 ## Read the connection
 
@@ -22,7 +22,7 @@ For Ollama it builds a request to the local `/api/chat` address with streaming s
 
 Ollama and the API services return their text in different fields. `send_live` checks that generation finished normally and takes the text from the field where that service keeps it. `course_response(text)` then wraps the text in the course's format with `status` and `output`, so `extract_answer` works the same way whichever service you chose.
 
-This step checks that the answer is complete; whether it agrees with the note is still for you to judge.
+This step checks that the answer is complete; whether it agrees with the clause is still for you to judge.
 
 ## Check yourself
 

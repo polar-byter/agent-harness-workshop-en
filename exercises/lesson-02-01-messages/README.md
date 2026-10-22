@@ -1,4 +1,4 @@
-# Send a question with its source notes
+# Send the question with its policy clauses
 
 Open this folder as a PyCharm project and read [TASK.md](TASK.md).
 

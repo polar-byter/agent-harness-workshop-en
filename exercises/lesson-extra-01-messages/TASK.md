@@ -3,7 +3,7 @@
 > **Where we are.** First lesson of the optional workbook. We write the function that assembles the messages for the model before it chooses its next action.
 > `task + history -> [messages] -> model -> command`
 
-A user asks about Python. The model has to decide what to do: search the notes, read them all or answer right away. The user's words alone are not enough for that. The program has to tell the model which actions exist, how to ask for them and what has already been done. If the result of the last search is not in the messages, the model does not know about it. If the tool names are not explained, the model may ask for something the program does not have.
+A customer asks about returns. The model has to decide what to do: search the policy, read it all or answer right away. The customer's words alone are not enough for that. The program has to tell the model which actions exist, how to ask for them and what has already been done. If the result of the last search is not in the messages, the model does not know about it. If the tool names are not explained, the model may ask for something the program does not have.
 
 `build_decision_messages` assembles these messages. You will see exactly what the model is about to receive: the rules, the task and the history. When an agent behaves oddly, this content is the first thing to check.
 
@@ -16,7 +16,7 @@ Download [this lesson's starter](https://github.com/polar-byter/agent-harness-wo
 Start with the first request, before any search:
 
 ```python
-task = 'Find notes about Python'
+task = 'Find the return clauses in the policy'
 events = []
 ```
 
@@ -61,9 +61,9 @@ Open `demo_check.py` and choose **Run**. The Run window shows the rules and the 
 `demo_check.py` also makes a second call: the program has run a search and is asking the model again. The task is the same, and the history now has an entry saying which tool ran and what it returned:
 
 ```python
-events = [{'tool': 'find_notes', 'result': ['Python lists keep item order.']}]
+events = [{'tool': 'find_notes', 'result': ['Returns are accepted within 14 days.']}]
 ```
 
-The program writes that entry after the search; the model does not create it. Compare the two `'user'` messages in the output: in the second, the model would receive the found note together with the task, while the rules stay the same.
+The program writes that entry after the search; the model does not create it. Compare the two `'user'` messages in the output: in the second, the model would receive the found clause together with the task, while the rules stay the same.
 
 Next: [parse a command from model text](https://github.com/polar-byter/agent-harness-workshop-en/blob/main/course/extra-prepared-modules/02-command.md). Back to [the workbook](https://github.com/polar-byter/agent-harness-workshop-en/blob/main/course/extra-prepared-modules/README.md).

@@ -16,11 +16,11 @@ class LessonTests(unittest.TestCase):
         calls = []
         def decide(task, events):
             calls.append(len(events))
-            return {'type':'tool','tool':'find_notes','query':'python'} if not events else {'type':'answer','text':'Done'}
-        result = run_agent('Find Python', ROOT/'data'/'notes.txt', decide, 3)
+            return {'type':'tool','tool':'find_notes','query':'return'} if not events else {'type':'answer','text':'Done'}
+        result = run_agent('Find the clauses about returns', ROOT/'data'/'notes.txt', decide, 3)
         self.assertEqual(calls, [0, 1])
         self.assertEqual(result['answer'], 'Done')
-        self.assertEqual(len(result['events'][0]['result']['matches']), 2)
+        self.assertEqual(len(result['events'][0]['result']['matches']), 3)
         repeat = lambda task, events: {'type':'tool','tool':'read_notes'}
         self.assertEqual(run_agent('Repeat', ROOT/'data'/'notes.txt', repeat, 2)['status'], 'step_limit')
 

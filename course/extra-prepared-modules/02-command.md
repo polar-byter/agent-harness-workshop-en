@@ -3,7 +3,7 @@
 > **Where we are.** Second lesson of the optional workbook. The messages for the model are ready; now we read its reply.
 > `messages -> model -> [text -> command dictionary] -> dispatch_tool`
 
-The model replied `{"type":"tool","tool":"find_notes","query":"python"}`. We can see it is a request to search. To Python, it is still one string, and the separate values have to be extracted from it.
+The model replied `{"type":"tool","tool":"find_notes","query":"return"}`. We can see it is a request to search. To Python, it is still one string, and the separate values have to be extracted from it.
 
 The model could also reply "I will search now", or send a JSON list instead of an object. The program must not take such a reply for a command and carry on with missing data. So `parse_decision` parses the text, checks that it got a dictionary, and either returns it or reports an error. This is where the model's reply ends and our code's responsibility begins.
 
@@ -16,7 +16,7 @@ Download [this lesson's starter](../../downloads/lesson-extra-02-command.zip), e
 `demo_check.py` uses this reply:
 
 ```python
-text = '{"type":"tool","tool":"find_notes","query":"python"}'
+text = '{"type":"tool","tool":"find_notes","query":"return"}'
 ```
 
 We see the words `tool` and `query` in the string, but a string has no fields with those names. To get at them, parse the text with `json.loads`:
@@ -24,7 +24,7 @@ We see the words `tool` and `query` in the string, but a string has no fields wi
 ```python
 command = json.loads(text)
 command['tool']    # 'find_notes'
-command['query']   # 'python'
+command['query']   # 'return'
 ```
 
 Now `command` is a dictionary. `json.loads` neither chooses nor invents anything; it only reads what is written in the text. An easy way to remember the pair: `dumps` turns data into text, `loads` turns text into data.
@@ -64,7 +64,7 @@ Open `demo_check.py` and choose **Run**. First you see the change from string to
 ```text
 Before parsing: <class 'str'>
 After parsing: <class 'dict'>
-Command: {'type': 'tool', 'tool': 'find_notes', 'query': 'python'}
+Command: {'type': 'tool', 'tool': 'find_notes', 'query': 'return'}
 Tool: find_notes
 Query: python
 ```

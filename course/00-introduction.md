@@ -20,13 +20,13 @@ Much of this only becomes clear in practice. An instruction to "answer only from
 
 ## What we will build
 
-You may already have attached a document to a chatbot and asked it to find a passage. For one-off work that is enough. But a chat window does not show you what the application actually sent to the model or what it did with the reply. So in this course we write, step by step in Python, a small assistant that answers questions from a set of notes, and we can check every part of it ourselves.
+You may already have attached a document to a chatbot and asked it to find a passage. For one-off work that is enough. But a chat window does not show you what the application actually sent to the model or what it did with the reply. So in this course we write, step by step in Python, a small assistant that answers questions from an online store's returns policy, and we can check every part of it ourselves.
 
 First the program learns to find relevant lines in a text file - the simplest form of what articles call RAG, searching a knowledge base before answering. Then we pass what was found to a model together with a question and check whether it answers from the source. Next the model starts asking the program to run the search itself, while the program decides whether the action is allowed, limits the number of steps in the agent loop and records what happens. In the last section the assistant proposes a change to a small piece of code, and the program applies it only with your approval and then runs the tests. That is, in miniature, how Claude Code, Cursor and other coding agents work.
 
 You can connect the model through a cloud API or run it on your own computer with Ollama. Registering with a cloud service or paying for requests is not required.
 
-By the end you will have a place in the code for every question from the MTS case: where the right paragraph lived, whether the search found it, what the model received and who approved the action.
+By the end you will have a place in the code for every question from the MTS case: where the right clause lived, whether the search found it, what the model received and who approved the action.
 
 ## The model and the program around it
 
@@ -36,6 +36,6 @@ Other terms - prompt, context, tools, guardrails - come up as we go, each one on
 
 ## Where we begin
 
-First we open the training project in PyCharm and make sure Python runs. Then we write the first function: a search through the notes by keyword. That is where the chain from the MTS case starts: did the program find the right line?
+First we open the training project in PyCharm and make sure Python runs. Then we write the first function: a search through the policy by keyword. That is where the chain from the MTS case starts: did the program find the right clause?
 
 -> [Open the first project](01-note-search/00-setup.md)

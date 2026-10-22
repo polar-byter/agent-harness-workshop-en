@@ -12,7 +12,7 @@ ROOT = Path(__file__).resolve().parent
 def main():
     print('Exercise run without a network model call.')
     try:
-        result = run_agent('Find notes about Python', ROOT / 'data' / 'notes.txt', decide_fixture)
+        result = run_agent('Find the return clauses in the policy', ROOT / 'data' / 'notes.txt', decide_fixture)
     except NotImplementedError as error:
         print(error)
     else:

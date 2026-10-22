@@ -16,7 +16,7 @@ Download [this lesson's starter](https://github.com/polar-byter/agent-harness-wo
 {'input_tokens': 10, 'output_tokens': 0, 'cached_tokens': None}
 ```
 
-Ten must be shown as a number, zero as zero, and `None`, meaning the service sent no value, must be explained in words. A model processes text in small pieces called tokens; the input count covers the rule, question and note, and the output count covers the generated answer.
+Ten must be shown as a number, zero as zero, and `None`, meaning the service sent no value, must be explained in words. A model processes text in small pieces called tokens; the input count covers the rule, question and clause, and the output count covers the generated answer.
 
 ## Your turn
 
@@ -51,7 +51,7 @@ To run the prepared checks, open `tests/test_lesson.py` and run its test class. 
 
 ## Try it
 
-Add a second note to the `notes` list in `demo_usage.py`, for example `'Python functions return values.'`, and run again. Compare the number of input tokens with the first run. Then put the list back and run the same request twice in a row, comparing the cache counter and the time.
+Add a second clause to the `notes` list in `demo_usage.py`, for example `'Delivery within the city takes 1 day.'`, and run again. Compare the number of input tokens with the first run. Then put the list back and run the same request twice in a row, comparing the cache counter and the time.
 
 ## What we have now
 

@@ -8,7 +8,7 @@ from decisions import build_decision_messages, parse_decision
 def main():
     print('Offline exercise check.')
     try:
-        text = '{"type":"tool","tool":"find_notes","query":"python"}'
+        text = '{"type":"tool","tool":"find_notes","query":"return"}'
         print('Before parsing:', type(text))
         decision = parse_decision(text)
         print('After parsing:', type(decision))

@@ -1,31 +1,31 @@
 # Lessons and starters
 
-Step by step we hand the program more of the work. First it finds notes, then a model answers from what was found, then the model asks the program to search on its own while the program enforces limits and keeps a log. In the last section an agent proposes a code change, and the program applies it only with your approval and runs the tests.
+Step by step we hand the program more of the work. First it finds clauses in a returns policy, then a model answers from what was found, then the model asks the program to search on its own while the program enforces limits and keeps a log. In the last section an agent proposes a code change, and the program applies it only with your approval and runs the tests.
 
 Each lesson answers one question from the MTS case that opens the [introduction](00-introduction.md): is the right line in the source, did the search find it, what did the model receive, who approved the action.
 
 Every lesson has its own archive. Earlier parts are already working, and the current function is started and paused at `NotImplementedError`. You can keep working in your own project or open the lesson's archive in a new PyCharm window. If you lose track of the PyCharm windows, see [how to find a file and run an example](pycharm.md). Forgotten a term? There is a [list of terms](terms.md).
 
-## Section 1. Searching notes
+## Section 1. Searching the policy
 
 Did the program find the right line?
 
 | Lesson | Starter |
 |---|---|
-| [Write a search function](01-note-search/01-search.md) | [lesson-01-01-search](../downloads/lesson-01-01-search.zip) |
-| [Read notes from a file](01-note-search/02-read.md) | [lesson-01-02-read](../downloads/lesson-01-02-read.zip) |
+| [Find policy clauses by keyword](01-note-search/01-search.md) | [lesson-01-01-search](../downloads/lesson-01-01-search.zip) |
+| [Read the policy from a file](01-note-search/02-read.md) | [lesson-01-02-read](../downloads/lesson-01-02-read.zip) |
 | [Save a search result](01-note-search/03-journal.md) | [lesson-01-03-journal](../downloads/lesson-01-03-journal.zip) |
 | [Connect reading, search and the journal](01-note-search/04-run.md) | [lesson-01-04-run](../downloads/lesson-01-04-run.zip) |
 
 Optional: [let tests repeat the checks](01-note-search/extra-tests.md).
 
-## Section 2. Answering from source notes
+## Section 2. Answering from the policy
 
 What did the model receive, and did it answer from the source?
 
 | Lesson | Starter |
 |---|---|
-| [Send a question with its source notes](02-note-assistant/01-messages.md) | [lesson-02-01-messages](../downloads/lesson-02-01-messages.zip) |
+| [Send the question with its policy clauses](02-note-assistant/01-messages.md) | [lesson-02-01-messages](../downloads/lesson-02-01-messages.zip) |
 | [Extract text from a service response](02-note-assistant/02-response.md) | [lesson-02-02-response](../downloads/lesson-02-02-response.zip) |
 | [Connect the request and the answer](02-note-assistant/03-answer.md) | [lesson-02-03-answer](../downloads/lesson-02-03-answer.zip) |
 | [Connect a real model](02-note-assistant/04-connect.md) | [lesson-02-04-connect](../downloads/lesson-02-04-connect.zip) |

@@ -5,8 +5,8 @@ from transport import send_live
 
 def main():
     try:
-        answer = answer_question('What do the notes say about Python?',
-                                 ['Python lists keep item order.'], send_live)
+        answer = answer_question('How many days do I have to return an item?',
+                                 ['Returns are accepted within 14 days.'], send_live)
     except (NotImplementedError, ValueError) as error:
         print(error)
     else:

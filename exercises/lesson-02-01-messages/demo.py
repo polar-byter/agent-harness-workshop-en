@@ -11,7 +11,7 @@ ROOT = Path(__file__).resolve().parent
 def main():
     print('Exercise run without a network model call.')
     try:
-        result = build_messages('What do the notes say about Python?', ['Python lists keep item order.'])
+        result = build_messages('How many days do I have to return an item?', ['Returns are accepted within 14 days.'])
     except NotImplementedError as error:
         print(error)
     else:

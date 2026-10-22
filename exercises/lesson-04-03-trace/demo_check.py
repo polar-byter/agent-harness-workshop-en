@@ -13,7 +13,7 @@ ROOT = Path(__file__).resolve().parent
 def main():
     print('Exercise run without a network model call.')
     try:
-        events = [{'command': {'tool':'read_notes'}, 'result': {'notes':['Python lists']}}]
+        events = [{'command': {'tool':'read_notes'}, 'result': {'notes':['Returns are accepted within 14 days.']}}]
         path = ROOT / 'trace.jsonl'
         save_events(path, events)
         result = path.read_text(encoding='utf-8')

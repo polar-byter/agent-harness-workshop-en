@@ -7,21 +7,21 @@ from transport import course_response
 
 class DecisionTests(unittest.TestCase):
     def test_task_and_history_reach_the_model(self):
-        events = [{'tool': 'find_notes', 'result': ['Python lists keep item order.']}]
+        events = [{'tool': 'find_notes', 'result': ['Returns are accepted within 14 days.']}]
         with patch('decisions.send_live', return_value=course_response('{"type":"answer","text":"Done"}')) as send:
-            result = decide_live('Find notes about Python', events)
+            result = decide_live('Find the return clauses in the policy', events)
         messages = send.call_args.args[0]
         self.assertEqual(json.loads(messages[1]['content'])['events'], events)
-        self.assertEqual(json.loads(messages[1]['content'])['task'], 'Find notes about Python')
+        self.assertEqual(json.loads(messages[1]['content'])['task'], 'Find the return clauses in the policy')
         self.assertEqual(result, {'type': 'answer', 'text': 'Done'})
         send.assert_called_once()
 
     def test_non_json_answer_is_rejected(self):
         with patch('decisions.send_live', return_value=course_response('I will search now')):
             with self.assertRaises(ValueError):
-                decide_live('Find notes about Python', [])
+                decide_live('Find the return clauses in the policy', [])
 
     def test_incomplete_response_is_not_parsed(self):
         with patch('decisions.send_live', return_value={'status': 'incomplete', 'output': []}):
             with self.assertRaisesRegex(ValueError, 'incomplete'):
-                decide_live('Find notes about Python', [])
+                decide_live('Find the return clauses in the policy', [])

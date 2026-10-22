@@ -1,4 +1,4 @@
-# Read notes from a file
+# Read the policy from a file
 
 Open this folder as a PyCharm project and read [TASK.md](TASK.md).
 

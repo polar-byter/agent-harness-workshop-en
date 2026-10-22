@@ -52,7 +52,7 @@ with urlopen(request, timeout=180) as response:
 
 Open `demo_check.py` and choose **Run**. The Run window shows `POST`, the address `https://example.invalid/chat`, the request data and the result `{'ok': True}`. To run the prepared checks, run `tests/test_lesson.py`.
 
-Then run `demo.py`. It makes a real request through the saved connection: it asks "What do the notes say about Python?" and passes the note "Python lists keep item order." Here the model simply answers from the note, with no tools: that is enough to check the network function. We expect an answer about lists keeping their order; the exact words depend on the model. A cloud service counts this request against your quota.
+Then run `demo.py`. It makes a real request through the saved connection: it asks "How many days do I have to return an item?" and passes the clause "Returns are accepted within 14 days." Here the model simply answers from the note, with no tools: that is enough to check the network function. We expect an answer about lists keeping their order; the exact words depend on the model. A cloud service counts this request against your quota.
 
 ## How different services end up in one format
 

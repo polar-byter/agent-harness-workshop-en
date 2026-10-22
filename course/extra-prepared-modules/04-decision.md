@@ -13,10 +13,10 @@ Download [this lesson's starter](../../downloads/lesson-extra-04-decision.zip), 
 
 ## Look at the data
 
-In `demo_check.py` the task "Find notes about Python" goes in with an empty history: the first request, before any search. Instead of a model, the offline check returns a prepared response containing the command text:
+In `demo_check.py` the task "Find the return clauses in the policy" goes in with an empty history: the first request, before any search. Instead of a model, the offline check returns a prepared response containing the command text:
 
 ```json
-{"type":"tool","tool":"find_notes","query":"python"}
+{"type":"tool","tool":"find_notes","query":"return"}
 ```
 
 `send_live` brings every service's response into the course format; for our example it looks like this:
@@ -25,12 +25,12 @@ In `demo_check.py` the task "Find notes about Python" goes in with an empty hist
 response = {'status': 'completed', 'output': [
     {'type': 'message', 'content': [
         {'type': 'output_text',
-         'text': '{"type":"tool","tool":"find_notes","query":"python"}'}
+         'text': '{"type":"tool","tool":"find_notes","query":"return"}'}
     ]}
 ]}
 ```
 
-The outer dictionary describes the finished service response; the `text` field holds the model's command. `extract_answer` takes out that string, `parse_decision` turns it into a dictionary, and the caller gets `{'type': 'tool', 'tool': 'find_notes', 'query': 'python'}`: a command, not a description of the service response.
+The outer dictionary describes the finished service response; the `text` field holds the model's command. `extract_answer` takes out that string, `parse_decision` turns it into a dictionary, and the caller gets `{'type': 'tool', 'tool': 'find_notes', 'query': 'return'}`: a command, not a description of the service response.
 
 <img src="../../assets/extra-prepared-modules/decision-flow.gif" width="480" alt="One decide_live call from messages to a command dictionary">
 
@@ -57,11 +57,11 @@ The variable names keep the stages apart: `messages` is the list before the requ
 
 ## Run it
 
-Open `demo_check.py` and choose **Run**. The Run window shows the dictionary with the query "python". To run the prepared checks, run `tests/test_lesson.py`.
+Open `demo_check.py` and choose **Run**. The Run window shows the dictionary with the query "return". To run the prepared checks, run `tests/test_lesson.py`.
 
 Then run `demo.py`. It prints the chosen model and the task (never the API key) and makes a real request. The model may choose `find_notes`, `read_notes` or answer straight away. If it replies with prose instead of JSON, the check in `parse_decision` fires. Valid JSON still does not mean the action was well chosen; that shows only in the command itself.
 
-The demonstration prints the dictionary and carries nothing out. In the main course the dictionary goes on to `dispatch_tool`, which checks the tool name and runs a permitted action. The path to the notes file is set by the program; the model's command does not contain it.
+The demonstration prints the dictionary and carries nothing out. In the main course the dictionary goes on to `dispatch_tool`, which checks the tool name and runs a permitted action. The path to the policy file is set by the program; the model's command does not contain it.
 
 ## Where the agent loop continues
 

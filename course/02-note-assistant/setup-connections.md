@@ -26,6 +26,6 @@ Read the service's own error text as well; it often says more than the code.
 
 ## The request works but the answer is wrong
 
-The connection is fine; now the question is the model's behavior. Look at the question and the note first, then at the actual messages and the extracted answer. Run `demo_check.py` to test your Python separately from the model. Do not edit the prepared response or hard-code the expected text to make the live run look right.
+The connection is fine; now the question is the model's behavior. Look at the question and the clause first, then at the actual messages and the extracted answer. Run `demo_check.py` to test your Python separately from the model. Do not edit the prepared response or hard-code the expected text to make the live run look right.
 
 Keep API keys in the course settings window. Return to [the connection lesson](04-connect.md) once the failing step works.

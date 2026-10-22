@@ -74,7 +74,7 @@ def main():
                 env=dict(os.environ,PYTHONIOENCODING='utf-8',PYTHONDONTWRITEBYTECODE='1'),
                 capture_output=True,text=True,encoding='utf-8',timeout=15)
             assert result.returncode==0,(lesson['root'],result.stdout,result.stderr)
-            expected = 'Python lists preserve item order.' if lesson.get('ready') else 'Complete'
+            expected = 'You can return an item within 14 days.' if lesson.get('ready') else 'Complete'
             assert expected in result.stdout,(lesson['root'],result.stdout)
         if lesson['group'] >= 3 or lesson.get('ready'):
             runtime=ROOT/'tools/model_runtime'

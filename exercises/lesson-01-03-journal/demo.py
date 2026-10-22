@@ -12,7 +12,7 @@ def main():
     print('Exercise run without a network model call.')
     try:
         path = ROOT / 'runs.jsonl'
-        write_result(path, {'query': 'python', 'matches': ['Python lists']})
+        write_result(path, {'query': 'return', 'matches': ['Returns are accepted within 14 days.']})
         result = path.read_text(encoding='utf-8').splitlines()[-1]
     except NotImplementedError as error:
         print(error)

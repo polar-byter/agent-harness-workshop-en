@@ -14,45 +14,45 @@ def story(group, name, title, *scenes):
 
 
 story(1, 'function-inputs', 'Arguments become function parameters',
-      step('Call find_notes(notes, query)', 'notes: ["Python lists", "Agent tools"]\nquery: " PYTHON "',
+      step('Call find_notes(notes, query)', 'notes: ["Returns are accepted...",\n        "Delivery within the city...", "RETURNED money..."]\nquery: " Return "',
            'First argument -> notes\nSecond argument -> query', 'The caller supplies values; the function receives them through its parameters.', 'arguments'),
-      step('Normalize the query', '" PYTHON "', '"python"', 'strip removes edge spaces; casefold supports case-insensitive comparison.', 'strip / casefold'),
-      step('Return matching source lines', '["Python lists"]', 'The caller receives a list.', 'Returning a value is separate from printing it.', 'return'))
+      step('Normalize the query', '" Return "', '"return"', 'strip removes edge spaces; casefold supports case-insensitive comparison.', 'strip / casefold'),
+      step('Return matching source lines', '["Returns are accepted...",\n "RETURNED money..."]', 'The caller receives a list.', 'Returning a value is separate from printing it.', 'return'))
 
-search = [step('Prepare the query and result list', 'query = " PYTHON "', 'query = "python"\nselected = []', 'Keep original source lines for the returned list.', 'prepare'),
-          step('Check "Python lists"', '"python" in "python lists" -> True', '["Python lists"]', 'Append the original matching line.', 'append'),
-          step('Check "Agent tools"', '"python" in "agent tools" -> False', '["Python lists"]', 'No match: the result list stays unchanged.', 'skip'),
-          step('Check "python functions"', '"python" in "python functions" -> True', '["Python lists", "python functions"]', 'Append the second match, then return after the loop.', 'append / return')]
+search = [step('Prepare the query and result list', 'query = " Return "', 'query = "return"\nselected = []', 'Keep original source lines for the returned list.', 'prepare'),
+          step('Check the first clause', '"return" in "returns are accepted..." -> True', '["Returns are accepted..."]', 'Append the original matching line.', 'append'),
+          step('Check the second clause', '"return" in "delivery within the city..." -> False', '["Returns are accepted..."]', 'No match: the result list stays unchanged.', 'skip'),
+          step('Check the third clause', '"return" in "returned money..." -> True', '["Returns are accepted...",\n "RETURNED money..."]', 'Append the second match, then return after the loop.', 'append / return')]
 story(1, 'search-notes', 'Search builds a result list', *search)
-read = [step('Read notes.txt', 'Python lists\n\nAgent tools', '"Python lists\\n\\nAgent tools\\n"', 'read_text returns one string; \\n represents a line break.', 'read_text'),
-        step('Split the text into lines', '"Python lists\\n\\nAgent tools\\n"', '["Python lists", "", "Agent tools"]', 'An empty line becomes an empty list element.', 'splitlines'),
-        step('Keep nonempty trimmed lines', '["Python lists", "", "Agent tools"]', '["Python lists", "Agent tools"]', 'Return the prepared list to the caller.', 'strip / return')]
+read = [step('Read notes.txt (_ marks a space)', '__Delivery within the city...\n(empty line)\nRETURNED money...', '"__Delivery within the city...\\n\\nRETURNED money...\\n"', 'read_text returns one string; \\n represents a line break.', 'read_text'),
+        step('Split the text into lines', '"__Delivery within the city...\\n\\nRETURNED money...\\n"', '["__Delivery within the city...", "",\n "RETURNED money..."]', 'The empty line becomes an empty element; leading spaces stay.', 'splitlines'),
+        step('Keep nonempty trimmed lines', '["__Delivery within the city...", "",\n "RETURNED money..."]', '["Delivery within the city...",\n "RETURNED money..."]', 'Return the prepared list to the caller.', 'strip / return')]
 story(1, 'read-notes', 'From a file to a list of notes', *read)
 story(1, 'read-data', 'A file, a string and a list differ', *read)
 story(1, 'lesson-03-journal', 'Append a search journal record',
-      step('Serialize the supplied result', 'query: "python"\nmatches: ["Python lists"]', '{"query":"python",\n "matches":["Python lists"]}', 'The result dictionary becomes a JSON string.', 'json.dumps'),
-      step('Append a line to runs.jsonl', 'Existing record for "agents"', 'Existing record for "agents"\nNew record for "python"', 'Mode a preserves earlier records; add a line break to the new one.', 'write'),
-      step('Inspect the two runs', 'Two separate JSONL records', 'The first query found nothing.\nThe second found "Python lists".', 'The journal preserves each supplied result.', 'read'))
+      step('Serialize the supplied result', 'query: "return"\nmatches: ["Returns are accepted..."]', '{"query":"return",\n "matches":["Returns are accepted..."]}', 'The result dictionary becomes a JSON string.', 'json.dumps'),
+      step('Append a line to runs.jsonl', 'Existing record for "refund to cash"', 'Existing record for "refund to cash"\nNew record for "return"', 'Mode a preserves earlier records; add a line break to the new one.', 'write'),
+      step('Inspect the two runs', 'Two separate JSONL records', 'The query "refund to cash" found nothing.\nThe query "return" found one clause.', 'The journal preserves each supplied result.', 'read'))
 story(1, 'lesson-04-run', 'Connect reading, search and a record',
       step('Read the selected source', 'notes_path: data/notes.txt', 'A list of note strings', 'A path identifies a source; search needs its contents.', 'read_notes'),
-      step('Search for " Python "', 'The list and query', '["Python functions return values.",\n "Python lists keep item order."]', 'Comparison ignores edge spaces and letter case.', 'find_notes'),
+      step('Search for " return "', 'The list and query', '["Returns are accepted...",\n "RETURNED money...",\n "A receipt or order number..."]', 'Comparison ignores edge spaces and letter case.', 'find_notes'),
       step('Save and return the result', 'query, status, matches', 'write_result -> runs.jsonl\nreturn result -> caller', 'Writing the file and returning the dictionary are separate actions.', 'write / return'))
 story(1, 'test-result', 'Compare a result with an expectation',
-      step('Define a known case', '["Python lists", "Agent tools"]\nquery: "python"', 'Expected: ["Python lists"]', 'The expectation describes this specific input.', 'input'),
-      step('Call the search function', 'find_notes(notes, query)', 'Actual: ["Python lists"]', 'This example shows a correct implementation.', 'return'),
+      step('Define a known case', '["Returns are accepted...",\n "Delivery within the city..."]\nquery: "return"', 'Expected: ["Returns are accepted..."]', 'The expectation describes this specific input.', 'input'),
+      step('Call the search function', 'find_notes(notes, query)', 'Actual: ["Returns are accepted..."]', 'This example shows a correct implementation.', 'return'),
       step('Compare both lists', 'Expected and actual lists', 'Equal: this test passes.\nReturning [] would fail.', 'A passing test checks its case, not every possible input.', 'assertEqual'))
 story(2, 'lesson-01-messages', 'Separate instruction and source data',
       step('Prepare the answering rule', 'Answer only from the supplied notes.', 'developer: source-only instruction', 'The instruction is separate from the source text.', 'rule'),
-      step('Serialize the question and notes', 'question: a question about Python\nnotes: ["Python lists keep item order."]', 'user: JSON with question and notes', 'The original note is part of the model input.', 'JSON'),
+      step('Serialize the question and notes', 'question: "How many days to return an item?"\nnotes: ["Returns are accepted within 14 days."]', 'user: JSON with question and notes', 'The original note is part of the model input.', 'JSON'),
       step('Return the message list', 'One rule message and one data message', '[developer message, user message]', 'The connection later adapts developer to system for these backends.', 'return'))
 story(2, 'lesson-02-response', 'Extract text from a response',
       step('Check completion', 'status: "completed"\noutput: a list of items', 'Inspect message items in output.', 'The full response contains structure as well as text.', 'status'),
-      step('Select output_text parts', 'message -> content -> output_text', '["Python lists preserve item order."]', 'Ignore unrelated service elements.', 'text part'),
-      step('Join and return the text', 'A list of answer fragments', '"Python lists preserve item order."', 'The caller now receives a string, not the response dictionary.', 'join / return'))
+      step('Select output_text parts', 'message -> content -> output_text', '["You can return an item within 14 days."]', 'Ignore unrelated service elements.', 'text part'),
+      step('Join and return the text', 'A list of answer fragments', '"You can return an item within 14 days."', 'The caller now receives a string, not the response dictionary.', 'join / return'))
 story(2, 'lesson-03-answer', 'From a question to an answer string',
       step('Build messages', 'Question + source note', 'Instruction message + data message', 'The source note becomes explicit request content.', 'messages'),
       step('Call the supplied sending function', 'send(messages)', 'A normalized response dictionary', 'A fixture checks the code; send_live makes a real request.', 'request / response'),
-      step('Extract and return the answer', 'extract_answer(response)', '"Python lists preserve item order."', 'The sentence is illustrative; live wording may differ.', 'return'))
+      step('Extract and return the answer', 'extract_answer(response)', '"You can return an item within 14 days."', 'The sentence is illustrative; live wording may differ.', 'return'))
 story(2, 'lesson-04-connect', 'Use the saved model connection',
       step('Save the chosen connection', 'Provider: Ollama\nModel: qwen3:0.6b', 'A user settings file outside the starter', 'The English course shares its own selection across lessons.', 'save'),
       step('Run demo.py', 'send_live(messages)', 'A request to the chosen local or API service', 'The settings determine the endpoint and model ID.', 'POST'),
@@ -70,9 +70,9 @@ story(2, 'lesson-extra-local-flow', 'Inference inside the Python process',
       step('Call the loaded model', 'Prepared instruction and source messages', 'create_chat_completion returns a dictionary.', 'No Ollama HTTP server is involved in this branch.', 'messages'),
       step('Normalize the answer', 'choices -> message -> content', 'status: completed\noutput: message with answer text', 'extract_answer can use the shared course response format.', 'convert'))
 story(3, 'lesson-01-tools', 'The program executes a model request',
-      step('Receive a proposed tool request', '{"type":"tool", "tool":"find_notes",\n "query":"python"}', 'command + application-selected notes_path', 'A tool name in a dictionary does not call a function.', 'command'),
+      step('Receive a proposed tool request', '{"type":"tool", "tool":"find_notes",\n "query":"return"}', 'command + application-selected notes_path', 'A tool name in a dictionary does not call a function.', 'command'),
       step('Check and dispatch the name', 'Allowed: find_notes\nUnknown names: reject', 'find_notes(read_notes(notes_path), query)', 'The program chooses which operations can run.', 'call'),
-      step('Return matching source text', 'The search completed.', '{"matches": [\n "Python functions return values.",\n "Python lists keep item order."]}', 'run_agent receives this result before it can be sent to the model.', 'return'))
+      step('Return matching source text', 'The search completed.', '{"matches": [\n "Returns are accepted...",\n "RETURNED money...",\n "A receipt or order number..."]}', 'run_agent receives this result before it can be sent to the model.', 'return'))
 for folder in ('03-tool-agent/', ''):
     STORIES.append(dict(path='assets/' + folder + ('lesson-02-cycle' if folder else 'agent-cycle') + '.gif', kind='cycle'))
 story(4, 'lesson-01-budget', 'A counter stops further requests',
@@ -108,13 +108,13 @@ story(5, 'lesson-04-verify', 'A written file still needs checks',
       step('Retest after the correct change', '100 * 3 -> 300\nExpected 300.', 'Exit code 0\npassed: True', 'check_project runs tests; it does not apply the fix.', 'unittest'),
       step('Return the process report', 'returncode, stdout, stderr', 'passed, returncode, output', 'Keep the diagnostic output as well as the success flag.', 'return'))
 story(6, 'messages-flow', 'Task and history become messages',
-      step('Build explicit request data', 'task: Find notes about Python\nevents: []', '{"task": "Find notes about Python",\n "events": []}', 'Later requests can include recorded tool results.', 'task + events'),
+      step('Build explicit request data', 'task: Find the return clauses in the policy\nevents: []', '{"task": "Find the return clauses\n  in the policy",\n "events": []}', 'Later requests can include recorded tool results.', 'task + events'),
       step('Serialize the data', 'A task-and-events dictionary', 'A JSON string for message content', 'Serialization changes the representation, not the task.', 'json.dumps'),
       step('Add the separate rules', 'Rules + serialized task data', 'developer: rules\nuser: task and history JSON', 'Return messages without making a network call.', 'return'))
 story(6, 'command-flow', 'JSON text becomes a command dictionary',
-      step('Parse model text', '\'{"type":"tool", "tool":"find_notes",\n "query":"python"}\'', '{"type":"tool", "tool":"find_notes",\n "query":"python"}', 'The input is str; the parsed object is dict.', 'json.loads'),
+      step('Parse model text', '\'{"type":"tool", "tool":"find_notes",\n "query":"return"}\'', '{"type":"tool", "tool":"find_notes",\n "query":"return"}', 'The input is str; the parsed object is dict.', 'json.loads'),
       step('Check the parsed object type', 'isinstance(command, dict)', 'True: return the dictionary.\nA JSON array would be rejected.', 'Valid JSON alone is not enough for this command protocol.', 'dict?'),
-      step('Give the dictionary to its caller', 'tool: find_notes\nquery: python', 'dispatch_tool checks and executes\na permitted request later.', 'Parsing does not authorize or execute the tool.', 'return'))
+      step('Give the dictionary to its caller', 'tool: find_notes\nquery: return', 'dispatch_tool checks and executes\na permitted request later.', 'Parsing does not authorize or execute the tool.', 'return'))
 story(6, 'request-flow', 'Follow the HTTP request bytes',
       step('Encode the request dictionary', 'payload: model and messages', 'JSON string -> UTF-8 bytes', 'The body contains bytes rather than a Python dictionary object.', 'encode'),
       step('Send and receive', 'Request: URL, POST, headers and body', 'urlopen sends the request\nand receives response bytes.', 'This illustrates a successful exchange.', 'HTTP'),

@@ -2,7 +2,7 @@
 
 > **Where we are.** In section 3 the model asks the program to run a search, and the program decides whether that is allowed. Part of that exchange came ready-made: the modules `decisions.py` and `transport.py`. This optional workbook is for writing them yourself.
 
-Recall the task: a user asks about Python, and the assistant must find the right notes. The model returns a request - "run a search with the query python" - but the program reads the file and searches it. For that exchange to work, the program first tells the model which actions are available and how to ask for them, and afterwards parses the text of the model's reply. On the next request it also passes on the results of actions already taken, otherwise the model never learns what was found.
+Recall the task: a customer asks about returns, and the assistant must find the right policy clauses. The model returns a request - "run a search with the query return" - but the program reads the file and searches it. For that exchange to work, the program first tells the model which actions are available and how to ask for them, and afterwards parses the text of the model's reply. On the next request it also passes on the results of actions already taken, otherwise the model never learns what was found.
 
 In the main starters, `decide_live` in `decisions.py` and the module `transport.py`, which talks to Ollama or a cloud service, do this for you. Here we write their parts one at a time and then assemble a working `decide_live`.
 
@@ -12,7 +12,7 @@ In the main starters, `decide_live` in `decisions.py` and the module `transport.
 | Returns the text of a command with a tool name and a query | The model |
 | Parses the command, checks it is allowed and runs the search | The program |
 | Passes the results with the task in the next request | The program |
-| Answers from the found notes | The model |
+| Answers from the found clauses | The model |
 
 | Lesson | What you write |
 |---|---|

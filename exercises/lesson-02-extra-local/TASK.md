@@ -4,7 +4,7 @@
 
 So far the model ran in a separate application and our code only sent it requests. Another option is to load the model file directly into the Python program. Then loading the model, calling it and freeing its memory become our code's job. This is how a model gets built into a program that must work without a network.
 
-The question and note stay the same, and `build_messages` and `extract_answer` do not change: we convert the model's reply into the familiar format. The only new function is `send_local`, which calls the loaded model.
+The question and clause stay the same, and `build_messages` and `extract_answer` do not change: we convert the model's reply into the familiar format. The only new function is `send_local`, which calls the loaded model.
 
 ## Open the starter
 

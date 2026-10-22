@@ -6,7 +6,7 @@ ROOT = Path(__file__).resolve().parent
 
 
 def main():
-    result = run_agent('Find notes about Python', ROOT / 'data' / 'notes.txt', decide_live)
+    result = run_agent('Find the return clauses in the policy', ROOT / 'data' / 'notes.txt', decide_live)
     for event in result.get('events', []):
         print(event)
     print(result)

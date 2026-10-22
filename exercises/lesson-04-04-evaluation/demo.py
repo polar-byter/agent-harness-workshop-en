@@ -8,9 +8,9 @@ ROOT = Path(__file__).resolve().parent
 
 def main():
     cases = [
-        {'name': 'python', 'task': 'Find notes about Python. If found, reply with found only.',
+        {'name': 'return', 'task': 'Find the return clauses in the policy. If they are found, reply with found only.',
          'expected_status': 'completed', 'expected_answer': 'found'},
-        {'name': 'missing', 'task': 'Find notes containing zzz_not_in_notes. If there are no matches, reply with missing only.',
+        {'name': 'missing', 'task': 'Find policy clauses matching zzz_not_in_notes. If nothing matches, reply with missing only.',
          'expected_status': 'completed', 'expected_answer': 'missing'},
     ]
     def run(task):

@@ -3,7 +3,7 @@
 > **Where we are.** The agent runs in a limited loop and its actions are logged. The last step of this section: checking whether a change made the agent better.
 > `set of tasks -> agent -> [compare with expectations] -> report`
 
-Say you adjusted the instructions and the assistant now answers the question about Python lists better. Is it better overall? It may have stopped saying "no information" when the notes have none, or started hitting the step limit more often. One good answer is easy to notice; a regression on other questions slips by without a repeatable check.
+Say you adjusted the instructions and the assistant now answers the question about the return period better. Is it better overall? It may have stopped saying "no information" when the policy has nothing on the question, or started hitting the step limit more often. One good answer is easy to notice; a regression on other questions slips by without a repeatable check.
 
 So we prepare a set of scenarios and agree, before running anything, on the right outcome for each. `evaluate_cases` runs the tasks, compares the results with the expectations and builds a report. This is what analysts call acceptance criteria: a list of cases by which an agent is accepted or sent back for more work.
 
@@ -16,13 +16,13 @@ Download [this lesson's starter](../../downloads/lesson-04-04-evaluation.zip), e
 A scenario is a dictionary with a name, a task and the expected result:
 
 ```python
-case = {'name': 'Answer', 'task': 'Find Python',
+case = {'name': 'Answer', 'task': 'Find the clauses about returns',
         'expected_status': 'completed', 'expected_answer': 'Done'}
 ```
 
 A list of these goes into the `cases` parameter. With it the function receives `run`, a function that performs a task and returns the actual result with a status and an answer. Those two fields are compared with the expectation.
 
-Exact comparison works only for short answers agreed in advance. That is why `demo.py` asks the model to reply with a single word: `found` if notes were found and `missing` if not. Free-form answers need other criteria.
+Exact comparison works only for short answers agreed in advance. That is why `demo.py` asks the model to reply with a single word: `found` if clauses were found and `missing` if not. Free-form answers need other criteria.
 
 <img src="../../assets/04-run-control/lesson-04-evaluation.gif" width="480" alt="Each scenario's result is compared with its expectation">
 
@@ -47,7 +47,7 @@ For `passed`, join two comparisons with `and`: `actual['status'] == case['expect
 
 ## Run it with the model
 
-Open `demo.py` and choose **Run 'demo'**. It has two scenarios for the real model: find notes about Python and reply `found`, and search for `zzz_not_in_notes` and reply `missing`. Your function compares the actual results with the expectations.
+Open `demo.py` and choose **Run 'demo'**. It has two scenarios for the real model: find the return clauses in the policy and reply `found`, and search for `zzz_not_in_notes` and reply `missing`. Your function compares the actual results with the expectations.
 
 **Guess before running:** will the model pass both scenarios?
 
@@ -61,7 +61,7 @@ Open `demo_check.py` and choose **Run 'demo_check'**. Its behavior is fixed in a
 {'passed': 2, 'total': 2, 'results': [{'name': 'Answer', 'passed': True}, {'name': 'Stop', 'passed': True}]}
 ```
 
-The second scenario checks stopping at the limit: the agent keeps asking to read the notes, and the correct result there is the status `budget_limit`. To run the prepared checks, run `class LessonTests` in `tests/test_lesson.py`.
+The second scenario checks stopping at the limit: the agent keeps asking to read the policy, and the correct result there is the status `budget_limit`. To run the prepared checks, run `class LessonTests` in `tests/test_lesson.py`.
 
 ## Try to break it
 

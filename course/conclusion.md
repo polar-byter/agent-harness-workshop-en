@@ -1,8 +1,8 @@
 # What we built and where it can help
 
-In the first lesson we looked for a word in three lines. By the end of the main route the program sends explicit requests to a model, runs only the tools it allows, passes tool results into the next request, enforces limits and records every step. In the last section the model proposes a code change, and the program shows the diff, asks for approval and runs the tests.
+In the first lesson we looked for the word "return" in three lines. By the end of the main route the program sends explicit requests to a model, runs only the tools it allows, passes tool results into the next request, enforces limits and records every step. In the last section the model proposes a code change, and the program shows the diff, asks for approval and runs the tests.
 
-Every question from the MTS case in the introduction now has a place in the code where it can be answered. Is the line in the source? Look at the file and `read_notes`. Did the search find it? The journal of `find_notes`. What did the model receive? The messages from `build_messages` and the history chosen by `select_context`. What did it ask for, and what did the program allow? `dispatch_tool` and the event log. Who approved the change? `apply_change`.
+Every question from the MTS case in the introduction now has a place in the code where it can be answered. Is the clause in the policy? Look at the file and `read_notes`. Did the search find it? The journal of `find_notes`. What did the model receive? The messages from `build_messages` and the history chosen by `select_context`. What did it ask for, and what did the program allow? `dispatch_tool` and the event log. Who approved the change? `apply_change`.
 
 ## What the exercises made concrete
 
@@ -45,5 +45,9 @@ For your next practice, pick a familiar task where you can check the answer your
 Then follow the path you already know: prepare the source, pass it to the model, record its actions and check the result on several different cases. Change one significant thing at a time, so you can tell what helped: a better document, a different selection of data, a clearer instruction or another model.
 
 The result of such work can be a task description for an integration that both developers and the client accept: what the system receives, what it does, when it hands the decision to a person and by which criteria its work is accepted.
+
+## Next stage
+
+In this course the model ran separately from the program: in a cloud service or in Ollama. In [stage 2, "The model inside your application"](https://github.com/polar-byter/agent-harness-advanced-1-en), the model is loaded straight into a Python program and runs on a laptop CPU without a network. You build real applications with it: a utility that sorts an Excel journal, routing of support requests to queues with a choice probability, a photo check for a return claim, a web service, voice message transcription and a Telegram bot. The store and its returns policy come along with you.
 
 Return to [the lesson index](README.md).

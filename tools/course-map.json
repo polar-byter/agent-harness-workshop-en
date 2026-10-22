@@ -182,7 +182,7 @@
       "root": "lesson-01-01-search",
       "source": "course/01-note-search/01-search.md",
       "path": "course/01-note-search/01-search.md",
-      "title": "Write a search function",
+      "title": "Find policy clauses by keyword",
       "targets": [
         [
           "notes.py",
@@ -201,7 +201,7 @@
       "root": "lesson-01-02-read",
       "source": "course/01-note-search/02-read.md",
       "path": "course/01-note-search/02-read.md",
-      "title": "Read notes from a file",
+      "title": "Read the policy from a file",
       "targets": [
         [
           "notes.py",
@@ -246,7 +246,7 @@
       "root": "lesson-02-01-messages",
       "source": "course/02-note-assistant/01-messages.md",
       "path": "course/02-note-assistant/01-messages.md",
-      "title": "Send a question with its source notes",
+      "title": "Send the question with its policy clauses",
       "targets": [
         [
           "assistant.py",

@@ -23,3 +23,7 @@ The repository checks cover links, packaging and the starters' unfinished state 
 ## Next stage
 
 [Stage 2: the model inside your application](https://github.com/polar-byter/agent-harness-advanced-1-en) continues this course. The model is loaded straight into a Python program and runs on a laptop CPU without a network, and you build real applications with it: an Excel utility, routing of support requests to queues, a photo check, a web service, voice message transcription and a Telegram bot.
+
+## License
+
+Code is released under the [MIT License](LICENSE). Lesson texts and images are released under [CC BY-NC-SA 4.0](LICENSE-CONTENT.md): you may use and adapt them with credit, for non-commercial purposes, under the same license.

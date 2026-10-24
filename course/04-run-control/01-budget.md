@@ -62,10 +62,10 @@ Open `demo_check.py` and choose **Run 'demo_check'**. With `steps=2`, `tool_call
 
 ## Try to break it
 
-In `demo.py` change the tool-call limit from `3` to `1` and run again. If the model wants more than one action, the program stops it after the first and reports the limit. The decision is made by the code, not by the model. Change it back to `3`.
+In `demo.py` change the tool-call limit from `3` to `1` and run again. If the model requests more than one action, the program stops it after the first and reports the limit. The decision is made by the code, not by the model. Change it back to `3`.
 
 ## What we have now
 
-The agent can no longer run forever: the number of requests and actions is limited in the program, whatever the model thinks about its task. It is another guardrail, next to the check of permitted tools.
+The agent can no longer run forever: the number of requests and actions is limited in the program, however many actions the model requests. It is another guardrail, next to the check of permitted tools.
 
 Next: [choose history for the next request](02-context.md). Back to [all lessons](../README.md).
